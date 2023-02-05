@@ -1,22 +1,18 @@
-# R4DS BOOKNAME Book Club
-
-FIND/REPLACE BOOKABBR, BOOKNAME, BOOKURL, BOOKAUTHORS, BOOKPUBLISHER, BOOKCOPYRIGHT, BOOKISBN, BOOKDOI, BOOKDAYS, BOOKTIMECST, BOOKCHANNELID, SIGNUPSHEETURL, TIMEANDDATEURL, STARTDATE, and PLAYLISTLINK THEN DELETE THIS SENTENCE.
-
-ALSO CONFIRM THE MEETING TIME INFO BELOW AND DELETE THIS SENTENCE.
+# R4DS Outstanding User Interfaces with Shiny Book Club
 
 ALSO ADD PLACEHOLDERS FOR ALL CHAPTERS BY COPYING 01.Rmd (IDEALLY ALSO UPDATE TITLES WITHIN THE FILES), THEN DELETE THIS SENTENCE.
 
-Welcome to the R4DS BOOKNAME Book Club!
+Welcome to the R4DS Outstanding User Interfaces with Shiny Book Club!
 
-We are working together to read [_BOOKNAME_](BOOKURL) by BOOKAUTHORS (BOOKPUBLISHER, copyright BOOKCOPYRIGHT, [BOOKISBN](BOOKDOI)).
-Join the [#book_club-BOOKABBR](https://rfordatascience.slack.com/archives/BOOKCHANNELID) channel on the [R4DS Slack](https://r4ds.io/join) to participate.
-As we read, we are producing [notes about the book](https://r4ds.io/BOOKABBR).
+We are working together to read [_Outstanding User Interfaces with Shiny_](https://unleash-shiny.rinterface.com/index.html) by David Granjon (Chapman & Hall, copyright August 31, 2022, [9780367645267](https://www.routledge.com/Outstanding-User-Interfaces-with-Shiny/Granjon/p/book/9780367645267)).
+Join the [#book_club-shinyui](https://rfordatascience.slack.com/archives/C04JGCCFUJD) channel on the [R4DS Slack](https://r4ds.io/join) to participate.
+As we read, we are producing [notes about the book](https://r4ds.io/shinyui).
 
 ## Meeting Schedule
 
-If you would like to present, please see the sign-up sheet for your cohort (linked below, and pinned in the [#book_club-BOOKABBR](https://rfordatascience.slack.com/archives/BOOKCHANNELID) channel on Slack)!
+If you would like to present, please see the sign-up sheet for your cohort (linked below, and pinned in the [#book_club-shinyui](https://rfordatascience.slack.com/archives/C04JGCCFUJD) channel on Slack)!
 
-- [Cohort 1](SIGNUPSHEETURL) (started STARTDATE): [BOOKDAYS, BOOKTIMECST CST/CDT](TIMEANDDATEURL) | [meeting videos](PLAYLISTLINK)
+- [Cohort 1](https://docs.google.com/spreadsheets/d/1tRFLTmqlapDMnusTXJ7Ce3rq4acMWHWz8fE636-T510/edit?usp=sharing) (started 2023-02-14): [Tuesdays, 10:00am CST/CDT](https://www.timeanddate.com/worldclock/converter.html?iso=20230214T160000&p1=24&p2=1440) | [meeting videos](https://youtube.com/playlist?list=PL3x6DOfs2NGj-2gwtHsnJ0CwpoChYjrh6)
 
 <hr>
 
@@ -29,7 +25,7 @@ To present, follow these instructions:
 Do these steps once:
 
 1. [Setup Git and GitHub to work with RStudio](https://github.com/r4ds/bookclub-setup) (click through for detailed, step-by-step instructions; I recommend checking this out even if you're pretty sure you're all set).
-2. `usethis::create_from_github("r4ds/bookclub-BOOKABBR")` (cleanly creates your own copy of this repository).
+2. `usethis::create_from_github("r4ds/bookclub-shinyui")` (cleanly creates your own copy of this repository).
 
 Do these steps each time you present another chapter:
 
@@ -45,5 +41,5 @@ Do these steps each time you present another chapter:
 10. When your PR has been accepted ("merged"), `usethis::pr_finish()` to close out your branch and prepare your local repository for future work.
 11. Now that your local copy is up-to-date with the main repo, you need to update your remote fork. Run `gert::git_push("origin")` or click the `Push` button on the `Git` tab of Rstudio.
 
-When your PR is checked into the main branch, the bookdown site will rebuild, adding your slides to [this site](https://r4ds.io/BOOKABBR).
+When your PR is checked into the main branch, the bookdown site will rebuild, adding your slides to [this site](https://r4ds.io/shinyui).
 
