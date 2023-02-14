@@ -55,9 +55,66 @@ library("shiny")
 
 ## Shiny generates HTML code
 
+```{r hello_html, results="asis"}
+# We use `message` just to help display the raw HTML that is produced
+message(
+  h1("Hello world")
+)
+```
+
+We just made HTML from R
+
+We can use other web tools to customise shiny apps
+
+- custom HTML (for content)
+- custom CSS (for styling)
+- custom JavaScript (for interactivitiy)
+- ... and make use of many templates and packages that are already written
+
 ## Be a DJ
 
+Here is [36 lines of shiny code](
+  https://github.com/DivadNojnarg/OSUICode/blob/master/inst/intro/dj-system/app.R
+) (plus a few images and styles etc).
+
+```r
+# Not rendered in the book
+
+remotes::install_github("Athospd/wavesurfer")
+OSUICode::run_example("intro/dj-system", package = "OSUICode")
+```
+
 ## HTML basics
+
+Resources:
+
+- MDN ["Introduction to HTML"](https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML)
+
+HTML
+
+- "Hypertext Markup Language"
+- content for a web page
+- ... and context for that content
+
+Tags:
+
+- Paired tags `<p>A paragraph</p>`
+- Self-closing tags `<img src="url-for-the-picture.jpg" alt="description of the picture"/>`
+- Purpose: structure, control and formatting
+
+The "Box Model"
+
+- defines the margins and dimensions of each element
+
+"Flow layout":
+
+- Block elements = full-width
+- Inline elements = same line
+- Inline-block = Inline element within which you can add block elements
+
+"Semantic meaning"
+
+- `<header>Content for the header element</header>`
 
 ## Tag attributes
 
