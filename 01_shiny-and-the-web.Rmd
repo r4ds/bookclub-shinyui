@@ -4,10 +4,78 @@
 
 - THESE ARE NICE TO HAVE BUT NOT ABSOLUTELY NECESSARY
 
-## SLIDE 1
+## Preamble
 
-- ADD SLIDES AS SECTIONS (`##`).
-- TRY TO KEEP THEM RELATIVELY SLIDE-LIKE; THESE ARE NOTES, NOT THE BOOK ITSELF.
+Example code for the book can be found on [GitHub](https://github.com/DivadNojnarg/OSUICode/)
+
+To install the book-associated package
+
+```r
+remotes::install_github("DivadNojnarg/OSUICode")
+library("OSUICode")
+```
+
+Prerequisites:
+
+- Essential
+  - Experience with shiny
+
+- Nonessential
+  - basic knoweledge of web technology (HTML, CSS, JS)
+
+Scope:
+
+- professional look and feel
+- develop input widgets
+- handle JS and CSS
+- mobile-friendly
+- integrate react
+
+Part 1 of the book:
+
+- Links between shiny and classic web technology (CSS, HTML, JS)
+- Explore the web dependencies in shiny (jQuery, Bootstrap)
+- Use {htmltools} to create / manipulate HTML and manage web dependencies
+
+## Introduction
+
+The data scientist route to web apps:
+
+- Learn R ==> use {shiny} ==> make interactive web apps
+
+The typical route
+
+- Learn HTML ==> learn CSS ==> learn JS ==> learn frontend/backend libraries
+
+- Make web apps at each stage
+
+```{r}
+library("shiny")
+```
+
+## Shiny generates HTML code
+
+## Be a DJ
+
+## HTML basics
+
+## Tag attributes
+
+## The simplest HTML skeleton
+
+## The DOM
+
+### Visualising the DOM
+
+### Web Inspector
+
+## CSS and JavaScript
+
+### HTML and CSS
+
+### HTML and JavaScript
+
+## Summary
 
 ## Meeting Videos
 
