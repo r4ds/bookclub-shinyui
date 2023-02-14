@@ -2,7 +2,10 @@
 
 **Learning objectives:**
 
-- THESE ARE NICE TO HAVE BUT NOT ABSOLUTELY NECESSARY
+- Basic introduction to web apps and shiny
+- Purpose of HTML, CSS, JavaScript
+- How to create HTML in R
+- How to add HTML, CSS, JavaScript to a shiny app
 
 ## Preamble
 
@@ -55,7 +58,7 @@ library("shiny")
 
 ## Shiny generates HTML code
 
-```{r hello_html, results="asis"}
+```{r hello_element, results="asis"}
 # We use `message` just to help display the raw HTML that is produced
 message(
   h1("Hello world")
@@ -118,21 +121,125 @@ The "Box Model"
 
 ## Tag attributes
 
+Add properties to your HTML elements!
+
+- `id` = must be unique
+- `class` = may be shared by multiple elements
+
+```html
+<div class="awesome-item" id="this-item"></div>
+<span class="awesome-item"></span>
+```
+
 ## The simplest HTML skeleton
+
+"Hello, World!" in HTML:
+
+```html
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <!-- head content here -->
+    <title>A title</title>
+  </head>
+  <body>
+    <p>Hello World</p>
+  </body>
+</html>
+```
+
+We made an HTML element using shiny above.
+Now let's make a whole web page:
+
+```r
+# Not ran
+ui <- fluidPage(p("Hello, World!"))
+server <- function(input, output, session) {}
+
+shinyApp(ui, server)
+```
+
+Run this app.
+Then inspect the source.
 
 ## The DOM
 
+Document Object Model:
+
+- Computational representation of an app
+- Use browser devtools to access it
+- [MDN "Manipulating documents"](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Manipulating_documents)
+
 ### Visualising the DOM
 
-### Web Inspector
+Open the "Hello, World!" app in the browser and click "Inspect"
+
+The inspector allows:
+
+- Dynamic changes to CSS
+- Debugging JS
+- Run JS from a console
+- Modify warnings / errors
+- Switch devices (e.g., mimic mobile)
+- Do performance audit
+
+Exercise:
+
+- Open "Hello, World!"
+- Open the inspector
+- Edit the paragraph text
+- Add children to paragraph tag
 
 ## CSS and JavaScript
 
+1991 - The [first website](http://info.cern.ch/hypertext/WWW/TheProject.html)
+
+1995 - JavaScript = Interactivity
+
+1996 - CSS = Styling
+
 ### HTML and CSS
+
+CSS specifies how collections of elements should be displayed
+Elements are picked by class, id, or other properties.
+
+In shiny, we can add CSS for styling in a few ways:
+
+```r
+ui <- fluidPage(
+  tags$style("p {color: red;}"),
+  p("Hello, World!")
+)
+server <- function(input, output, session) {}
+shinyApp(ui, server)
+```
 
 ### HTML and JavaScript
 
+With JS, we can respond to user clicks (amongst many other things):
+
+```r
+ui <- fluidPage(
+  tags$script(
+    "alert('Click on the Hello World text!');
+     // change text color
+     function changeColor(color){
+       document.getElementById('hello').style.color = color;
+     }
+    "
+  ),
+  p(id = "hello", onclick="changeColor('green')", "Hello World")
+)
+
+server <- function(input, output, session) {}
+
+shinyApp(ui, server)
+```
+
 ## Summary
+
+Shiny builds interactive web apps from R.
+You can add custom CSS, JS and HTML to your shiny apps.
 
 ## Meeting Videos
 
