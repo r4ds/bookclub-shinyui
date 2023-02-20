@@ -245,12 +245,27 @@ You can add custom CSS, JS and HTML to your shiny apps.
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/eabiEX8MNmQ")`
 
 <details>
 <summary> Meeting chat log </summary>
 
 ```
-LOG
+00:04:28	Arthur Shaw: @russ, you audio may not be hooked up yet
+00:04:45	Arthur Shaw: In Zoom, we can see "Connecting to audio" under your video
+00:05:09	Arthur Shaw: You may have a poor physical connection. Lots of static
+00:05:27	Arthur Shaw: Same issue
+00:17:47	Trevin: I'm also in the Mastering Shiny book club with Lucio 🙂
+00:20:09	Federica Gazzelloni: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide
+00:20:57	Lucio Cornejo: This book seems more robust in the frontdns side. JavaScript for R felt mostly R like
+00:21:02	Lucio Cornejo: frontend*
+00:38:53	Jack Penzer: When writing custom html, the inputId in a shiny function is defined as id = in the html?
+00:39:46	Lucio Cornejo: yes, it mainly copies the usual html attributes.
+00:40:36	Lucio Cornejo: so something like "class = 'some-name'" also work as an argument
+00:51:44	Jack Penzer: 👍
+01:02:46	Lucio Cornejo: I'll be doing chapter 2
+01:03:45	Trevin: Thanks for starting us off Russ!
+01:03:53	Lucio Cornejo: No questions from me. Thank you Russ
+01:04:12	Jack Penzer: Away skiing next week but will be back the following week!
 ```
 </details>
