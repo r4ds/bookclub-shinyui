@@ -2,7 +2,7 @@
 
 **Learning objectives:**
 
-- Generate HTML tags from R.
+- Generate HTML elements from R.
 - Modify the attributes of HTML
 elements from R.
 - Access chidren elements from an
