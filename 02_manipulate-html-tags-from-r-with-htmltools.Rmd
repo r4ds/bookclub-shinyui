@@ -2,12 +2,826 @@
 
 **Learning objectives:**
 
-- THESE ARE NICE TO HAVE BUT NOT ABSOLUTELY NECESSARY
+- Generate HTML tags from R.
+- Modify the attributes of HTML
+elements from R.
+- Access chidren elements from an
+HTML element and modify them via the
+`tagQuery` function.
 
-## SLIDE 1
+```{r, include=FALSE}
+knitr::opts_chunk$set(comment = NA)
+```
 
-- ADD SLIDES AS SECTIONS (`##`).
-- TRY TO KEEP THEM RELATIVELY SLIDE-LIKE; THESE ARE NOTES, NOT THE BOOK ITSELF.
+## Writing HTML tags from R
+
+- Install the **htmltools** package, which allows us
+to **manipulate**, **combine** and **rearrange**
+HTML elements directly from R:
+    ```{r}
+    #| eval: false
+    # CRAN
+    install.packages("htmltools")
+    # development version
+    remotes::install_github("rstudio/htmltools")
+    ```
+
+```{r}
+#| echo: false
+# Render the tag instead of printing its code
+library(knitr)
+library(htmltools)
+registerS3method(
+  "knit_print", "shiny.tag",
+  getS3method("print", "shiny.tag")
+)
+registerS3method(
+  "knit_print", "shiny.tag.list",
+  getS3method("print", "shiny.tag.list")
+)
+registerS3method(
+  "knit_print", "html",
+  getS3method("print", "html")
+)
+```
+
+- Create an HTML element via the **htmltools** package:
+    ```{r}
+    library(htmltools)
+    tag <- div("Hello world")
+    tag
+    ```
+
+- Inside the **tag** function call, **named** elements
+become attributes; and, **unnamed** elements, **children**:
+    ```{r}
+    div(
+      id = "r-create-div",
+      class = "r",
+      `data-numChildren` = 1,
+      div("Child")
+    )
+    ```
+
+## Notations
+
+- Some common HTML tags can be used directly without `tags$`,
+such as `p`, `h1`, `div`, `span`, etc.
+- Less common HTML tags require using `tags$`, such as `tags$nav`.
+
+- Get rid of `tags$` using `withTags()`:
+    ```{r}
+    withTags(
+      nav(
+        div(),
+        ul(
+          li(),
+          li()
+        )
+      )
+    )
+    ```
+
+- Use `tagList()` to gather multiple HTML elements together, 
+instead of `list()`,
+because a special class is added (`shiny.tag.list`), which allows for extra capabilities, such as printing as HTML content:
+    ```{r}
+    tagList(
+      p("Paragraph"),
+      p("Sibling of the previous paragraph")
+    )
+    ```
+
+## Adding new tags
+
+- Create a custom tag via the `tag()` function:
+    ```{r}
+    customTag <- tag(
+      "test",
+      list(
+        class = "custom",
+        p("Custom tag's only child")
+      )
+    )
+    customTag
+    ```
+
+- [Validate](https://validator.w3.org/) if the custom tag follows the HTML standards.
+
+## Alternative way to write tags
+
+- **Raw** HTML can be included via the `htmltools::HTML()` function.
+It prevents HTML content not being properly recognized:
+    ```{r}
+    div("Hello <i>world</i>")
+
+    div(HTML("Hello <i>world</i>"))
+    ```
+
+- When creating HTML elements for a Shiny app, it's recommended to 
+do so via R, instead of mixing it with raw HTML:
+    ```{r}
+    # Same output
+    HTML("<div>lorem</div>")
+    div("lorem")
+    ```
+
+    ```{r}
+    # Differen class
+    class(HTML("<div>lorem</div>"))
+    class(div("lorem"))
+    ```
+
+- The `shiny.tag` class is required for some tag-related
+functions which we'll cover in the next sections.
+
+## Playing with tags
+
+## Tags structure {.unnumbered}
+
+- A **shiny tag** is defined by:
+    - **name**: 
+        - Such as `span`, `div`, etc.
+        - Accesed via `tag$name`.
+    - **attributes**: 
+        - Accesed via `tag$attributes`.
+    - **children**: 
+        - Accesed via `tag$children`.
+    - **R class**: 
+        - Namely `shiny.tag`.
+
+- Example:
+    ```{r}
+    myTag <- div(
+      class = "divClass",
+      id = "first",
+      h1("First child"),
+      span(
+        class = "child",
+        id = "baby",
+        "Crying"
+      )
+    )
+
+    myTag
+    ```
+
+    ```{r}
+    ## Access it R class
+    str(myTag)
+
+    myTag$name
+    myTag$attribs
+    myTag$children
+    ```
+
+  ```{r}
+  # Modify the class of the second children
+  myTag$
+    children[[2]]$
+    attribs$
+    class <- "adult"
+
+  myTag
+  ```
+
+## Practical examples {.unnumbered}
+
+- Let's compare a common HTML structure for **select** inputs,
+to what **Shiny** provides us with:
+    
+    ```html
+    <div>
+      <label id="variable-label" for="variable">Variable:</label>
+      <select id="variable" class="some-class">
+        <option value="cyl" selected>Cylinders</option>
+        <option value="gear">Gears</option>
+      </select>
+    </div>
+    ```
+
+    ```{r}
+    shinySelect <- shiny::selectInput(
+      inputId = "selectId",
+      label = "Choose",
+      choices = 1:2,
+      selected = 1
+    )
+    shinySelect
+    ```
+
+- Let's match the HTML structure for both:
+    ```{r}
+    # Remove class of container
+    shinySelect$attribs$class <- NULL
+    
+    # Remove label element's class
+    shinySelect$
+      children[[1]]$
+      attribs$class <- NULL
+
+    # Remove extra div container for <select>
+    shinySelect$children[[2]] <- 
+      shinySelect$
+        children[[2]]$
+        children
+
+    shinySelect
+    ``` 
+
+## Useful functions for tags {.unnumbered}
+
+- The **htmltools** package provides us with functions
+to shorten the type of HTML transformation seen in 
+the previous example.
+
+### Add attributes {.unnumbered}
+
+- Append one or more **attributes** to an HTML
+element via the `tagAppendAttributes()` function:
+    ```{r}
+    myTag <- div("Some div")
+    myTag <- tagAppendAttributes(
+      myTag,
+      id = "someId",
+      class = "someClass",
+      `data-toggle` = "tabs"
+    )
+    
+    myTag
+    ```
+
+### Check if an element has an specific attribute {.unnumbered}
+
+- Function: `tagHasAttribute()`
+- Example: Does this `div` element have a class?
+    ```{r}
+    myTag <- div(class="myClass")
+    tagHasAttribute(myTag, "class")
+    ```
+
+### Get the attribute value of an element {.unnumbered}
+
+- The `tagGetAtribute()` function returns the
+target's attribute value, if it exists,
+otherwise `NULL`.
+
+- Example:
+    ```{r}
+    myTag <- div(class = "test", `data-toggle` = 1)
+    tagGetAttribute(myTag, "class")
+    tagGetAttribute(myTag, "data-toggle")
+    ```
+
+### Replace children {.unnumbered}
+
+- The `tagSetChildren()` function creates children for
+a given element, removing the already existing ones,
+if they actually exist.
+
+- Example:
+    ```{r}
+    myTag <- div(
+      class = "parent",
+      p("Son")
+    )
+
+    myTag <- tagSetChildren(
+      myTag, 
+      # Only daughters now
+      tagList(
+        p("Daughter 1"),
+        p("Daughter 2")
+      )
+    )
+    
+    myTag
+    ```
+
+### Add child or children {.unnumbered}
+
+- Add one child with `tagAppendChild()`, or many,
+with `tagAppendChildren()`, to an HTML element.
+
+- Example:
+    ```{r}
+    myTag <- div(
+      class = "parent",
+      p("Son")
+    )
+    myTag <- tagAppendChild(
+      myTag, 
+      p("Daughter")
+    )
+
+    myTag
+    ```
+
+### Build your own functions {.unnumbered}
+
+- Create a function to remove the `nth` child:
+    ```{r}
+    myTag <- div(
+      class = "parent", 
+      p("Favourite son"),
+      p("Least favourite son")
+    )
+
+    tagRemoveChild <- function(tag, n) {
+      # Check if there are no children
+      if (length(tag$children) == 0) {
+        stop(paste(tag$name, "does not have any children!"))
+      }
+      tag$children[n] <- NULL
+      tag
+    }
+    myTag <- tagRemoveChild(myTag, 2)
+
+    myTag
+    ```
+
+- Create a function to insert the `nth` child:
+    ```{r}
+    tagInsertChild <- function(tag, child, position) {
+      tag$children <- append(tag$children, list(child), position - 1)
+      tag
+    }
+
+    res1 <- tagInsertChild(p(span("hello")), a(), 1)
+    res2 <- tagInsertChild(p(span("hello")), a(), 2)
+
+    res1
+    res2
+    ```
+
+### Other functions {.unnumbered}
+
+The **golem** package contains more functions 
+to edit HTML elements, such as the 
+`tagRemoveAttributes()` function.
+
+### Conditionally set attributes {.unnumbered}
+
+Remember that you can use the `ifelse()` function 
+if you want to set some HTML element's attribute
+only under *specific conditions*.
+
+### Using the pipe operator {.unnumbered}
+
+These last functions work well with the pipe operator:
+
+```{r}
+div(
+  class = "someClass",
+  h1("Hello")
+) |>
+  tagAppendAttributes(
+    id = "someId"
+  ) |>
+  tagAppendChild(
+    p("some extra text")
+  )
+```
+
+### Programatically create children elements {.unnumbered}
+
+- The `lapply()` and `purrr:map()` functions can be used
+to programatically create children elements:
+    ```{r}
+    # Create 5 children
+    library(purrr)
+    map(1:5, \(x) span(x)) |>
+      div() |>
+      tagAppendAttributes(
+        class = "parent"
+      )
+    ```
+
+## Modern {htmltools}
+
+- This section requires a basic understanding
+of CSS selectors, therefore, let's start with a demo.
+
+- As of **htmltools** 0.5.2, the `tagQuery`
+function allows for more efficient and readable
+manipulation of HTML elements, using a syntax
+similar to **jQuery**.
+
+- Two ways to modify a span which is a *third child*:
+    ```{r}
+    spans <- div(div(p(), map(1:5, \(i) span(i))))
+    spans$children[[1]]$children[[2]][[3]]$attribs$class <- "test" 
+
+    spans
+    ```
+
+    ```{r}
+    spans <- div(div(p(), map(1:5, \(i) span(i))))
+    spans <- tagQuery(spans)$
+      find("span")$
+      filter(\(x, i) i == 3)$
+      addAttrs("class" = "amazing-tag")$
+      allTags()
+
+    spans
+    ```
+
+-  The biggest advantage is that is does not always depend
+on the overall tag structure:
+    ```{r}
+    spans <- div(div(p(), div(map(1:5, \(i) span(i)))))
+    spans <- tagQuery(spans)$
+      find("span")$
+      filter(\(x, i) i == 3)$
+      addAttrs("class" = "amazing-tag")$
+      allTags()
+
+    spans
+    ```
+
+## Basics {.unnumbered}
+
+- `tagQuery()` accepts an element or list of elements
+as input and returns a data structure containing:
+    - `$allTags()`: All elements.
+    - `$selectedTags()`: Selected/transformed tags.
+    Defults to `$allTags()`.
+
+```{r}
+tag_query <- tagQuery(div(p()))
+class(tag_query)
+tag_query
+```
+
+## Query tags {.unnumbered}
+
+- As of now, the `tagQuery()` function only supports
+simple CSS selectors ... `,`, `+`, `~ `, `data-` are not covered.
+
+- All available query methods:
+
+| Method | Description |
+| :---: | :---: |
+children	| Get all the direct descendants of each selected tag
+find	| Get all descendants of each selected tag
+parent	| Get the direct ancestors of each selected tag
+parents	| Get all parents of each selected tag
+siblings	| Get all siblings of each selected tag
+filter	| Subset selected tags with CSS selectors or R function
+resetSelected |	Reset set of selected tags to the root tag
+
+- Example: Access the third tab content element
+from a tabset panel with three tabs, a common case
+when building custom Shiny templates.
+
+```{r}
+temp_tabs <- map(1:3, \(i) tabPanel(i, paste("Tab", i)))
+tabs <- bs4Dash::tabsetPanel(.list = temp_tabs)
+tabs
+```
+
+```{r}
+tagQuery(tabs)$
+  # div element with CSS class "tab-pane"
+  find("div.tab-pane")$
+  filter(\(tag, index) tagGetAttribute(tag, "data-value") == 3)$
+  selectedTags()
+```
+
+## Modify tags {.unnumbered}
+
+- The `tagQuery()` function exposes various methods
+to modify **attributes** and **descendants** of the
+query selection.
+
+### Playing with attributes {.unnumbered}
+
+| Method | Description |
+| :---: | :---: |
+addAttrs | Add any number of attributes to each selected tag
+removeAttrs | Remove any number of attributes to each selected tag
+hasAttrs | Check if the selected tag has the specified attribute(s)
+addClass | Add any number of new classes to each selected tag
+removeClass | Remove any number of classes to each selected tag
+hasClass | Check if the selected tag has the specified classe(s)
+
+- Example:
+    - Add class `"fade"` to tab panels, so that Bootstrap
+    applies a *fade transition* between tabs:
+    - Code:
+    ```{r}
+    tagQuery(tabs)$
+      find(".tab-pane")$
+      addClass("fade")$
+      selectedTags()
+    ```
+
+### Altering element/children/siblings {.unnumbered}
+
+| Method | Description |
+|:---:|:---:| 
+append | Insert content after the children of each selected tag
+prepend | Insert content before the children of each selected tag
+empty | Remove all children from the selected tag
+remove | Remove all selected tags
+before | Insert content before each selected tag
+after | Insert content after each selected tag
+replaceWith | Replace the currently selected tag by the provided tag
+
+- Example:
+    - For `tabs`, include an icon before each tab title 
+    (text content of `<a>` element).
+    - Code:
+    ```{r}
+    new_tabs <- tagQuery(tabs)$
+      find("a")$
+      prepend(icon("flag"))
+    
+    new_tabs$selectedTags()
+    ```
+
+### Chain tag queries {.unnumbered}
+
+- The `$resetSelected()` function
+allows us to **reset** the element selection
+to the *base element* after a given operation,
+making it possible to chain multiple queries.
+
+- Let's combine all previous examples:
+  ```{r}
+  # Set HTML element "tabs" as base
+  tagQuery(tabs)$
+    # Operation 1:
+    #   Add "fade" class to all panels
+    find(".tab-pane")$
+    addClass("fade")$
+    resetSelected()$
+    # New operation: 
+    #   Add icon before the title of each "link"
+    find("a")$
+    prepend(icon("flag"))$
+    allTags()
+  ```
+
+### Specific cases {.unnumbered}
+
+- Some methods, like `$append()` and `$prepend()`
+are only able to add the **same** elements
+to one or multiple targets.
+
+- When the transformation to perform is **index specific**,
+`$each()` should be used. Such function takes an anonymous
+function as input, with parameters **element** and **index**.
+
+- Example:
+    - Replace text content of each tab panel with
+    **This is tab "tab_index"**.
+    - Code:
+    ```{r}
+    tagQuery(tabs)$
+      find(".tab-pane")$
+      empty()$
+      each(function(el, i) {
+        el <- tagAppendChild(el, paste("This is tab", i))
+        return(el)
+      })$
+      selectedTags()
+    ```
+
+### Practice {.unnumbered}
+
+- Let's perform the same transformation
+as in the **Practical examples** section,
+but now using **tagQuery()**.
+
+- Model:
+
+    ```html
+    <div>
+      <label id="variable-label" for="variable">Variable:</label>
+      <select id="variable" class="some-class">
+        <option value="cyl" selected>Cylinders</option>
+        <option value="gear">Gears</option>
+      </select>
+    </div>
+    ```
+
+- Example:
+    ```{r}
+    shinySelect <- shiny::selectInput(
+      inputId = "selectId",
+      label = "Choose",
+      choices = 1:2,
+      selected = 1
+    )
+    shinySelect
+    ```
+
+- Solution:
+    ```{r}
+    tagQuery(shinySelect)$
+      # Remove class of container
+      removeAttrs("class")$
+      # Remove label element's class
+      find(".control-label")$
+      removeAttrs("class")$
+      # Remove extra div container for <select>
+      siblings()$
+      replaceWith(
+        tagQuery(shinySelect)$
+          find(".control-label")$
+          siblings()$
+          children()$
+          selectedTags()
+      )$
+      allTags()
+    ```
+
+### Alter tag rendering with rendering hooks {.unnumbered}
+
+#### Simple hooks
+
+- Let's explore one of the more **advanced** features of
+the **htmltools** package: *Conditionally render an*
+*HTML element, depending on conditions like external options*
+*, a specific theme version, etc.*.
+
+- As an example, the condition will be if Shiny is in 
+`dev` mode:
+    ```{r}
+    devmode(TRUE)
+    getOption("shiny.devmode")
+    ```
+
+- We create an htmltools tag with specific
+instructions for the **.renderHook** parameter:
+    ```{r}
+    cssStyle <- "color: red; border: dashed red;"
+    customTag <- span("", .renderHook = function(x) {
+      if (getOption("shiny.devmode")) {
+        return(tagAppendAttributes(x, style = cssStyle))
+      }
+    })
+
+    customTag
+    ```
+
+- If the htmlools tag already has an existing **hook**,
+the `tagAddRenderHook()` adds another hook to the current list:
+    ```{r}
+    customTag <- tagAddRenderHook(customTag, function(x) {
+      if (getOption("shiny.devmode")) {
+        return(tagAppendChildren(x, "UNDER REWORK"))
+      } 
+    })
+
+    customTag$.renderHooks
+
+    # Remove first hook
+    # customTag$.renderHooks[[1]] <- NULL
+    ```
+
+- Let's try it in a Shiny app, after enabling
+or disabling `dev` mode:
+    ```{r, eval = FALSE}
+    library(shiny)
+
+    devmode(TRUE)
+    # devmode(devmode = FALSE)
+    getOption("shiny.devmode")
+
+    cssStyle <- "color: red; border: dashed red;"
+    customTag <- span("text", .renderHook = function(x) {
+      if (getOption("shiny.devmode")) {
+        return(tagAppendAttributes(x, style = cssStyle))
+      }
+    })
+
+    ui <- fluidPage(
+        customTag
+      )
+    server <- function(input, output) {}
+
+    shinyApp(ui, server)
+    ```
+
+#### Nested hooks {.unnumbered}
+
+- Most Shiny elements are composed of 
+main wrappers and **nested** tags, for example,
+`tabsetPanel()` and `tabPanel()`.
+
+- How do we handle nested elements?
+
+- Example:
+```{r}
+my_wrapper_tag <- function(...) {
+  wrapper <- div(class = "parent", ...)
+  items <- list(...)
+  
+  tagAddRenderHook(wrapper, function(x) {
+    version <- getOption("theme_version")
+    if (!is.null(version)) {
+      if (version == "4") {
+        new_items <- tagQuery(items)$
+          find(".new-child")$
+          each(function(x, i) {
+            tagAppendAttributes(x, id = letters[i])
+          })$
+          allTags()
+        
+        x <- tagQuery(x)$
+          empty()$
+          append(new_items)$
+          allTags()
+      } 
+    }
+    return(x)
+  })
+}
+```
+
+- Let's design the nested item function:
+```{r}
+my_nested_tag <- function() {
+  wrapper <- div(class = "nested")
+  
+  tagAddRenderHook(wrapper, function(x) {
+    version <- getOption("theme_version")
+    if (!is.null(version)) {
+      x <- if (version == "4") {
+        new_child <- div(class = "new-child")
+        
+        tagQuery(x)$
+          append(new_child)$
+          allTags()
+      } 
+    }
+    return(x)
+  })
+}
+```
+
+- Testing:
+```{r}
+options("theme_version" = "4")
+my_wrapper_tag(my_nested_tag(), my_nested_tag())
+
+options("theme_version" = "3")
+my_wrapper_tag(my_nested_tag(), my_nested_tag())
+```
+
+- Why did the `id` attribute did **not** get updated?
+    - It's basically a **resolve issue**.
+    - In the top-level render hook (`my_wrapper_tag`), the newly added item
+    is not yet available. 
+    - A **solution** is to resolve the sub items with `as.tags()`,
+    in order to convert any arbitrary element to be a part of the tag structure.
+    
+```{r}
+# Fixing the top-level render hook
+my_wrapper_tag <- function(...) {
+  wrapper <- div(class = "parent", ...)
+  items <- list(...)
+  
+  tagAddRenderHook(wrapper, function(x) {
+    version <- getOption("theme_version")
+    if (!is.null(version)) {
+      if (version == "4") {
+        ###############################
+        items <- lapply(items, as.tags)
+        ###############################
+
+        new_items <- tagQuery(items)$
+          find(".new-child")$
+          each(function(x, i) {
+            tagAppendAttributes(x, id = letters[i])
+          })$
+          allTags()
+        
+        x <- tagQuery(x)$
+          empty()$
+          append(new_items)$
+          allTags()
+      } 
+    }
+    return(x)
+  })
+}
+```
+
+- Final test:
+
+```{r}
+options("theme_version" = "4")
+my_wrapper_tag(my_nested_tag(), my_nested_tag())
+
+options("theme_version" = "3")
+my_wrapper_tag(my_nested_tag(), my_nested_tag())
+```
+
+A real-life case study is available later in the book in 
+**section 9.3.3.3** .
 
 ## Meeting Videos
 
