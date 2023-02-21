@@ -13,5 +13,7 @@ Depends:
     R (>= 3.1.0)
 Imports: 
     bookdown,
+    bs4Dash,
+    purrr,
     rmarkdown,
     shiny
