@@ -827,12 +827,19 @@ A real-life case study is available later in the book in
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/y353XzoGbFM")`
 
 <details>
 <summary> Meeting chat log </summary>
 
 ```
-LOG
+00:11:11	Arthur Shaw: @lucio, for the backticks, is that a requirement because the name is non-syntactic for R, or because that's what's required for non-traditional attributes?
+00:31:32	Arthur Shaw: https://developer.mozilla.org/en-US/docs/Web/API/Element/setAttribute
+00:32:44	Russ: document.getElementById("myList").appendChild(node);
+00:39:40	Arthur Shaw: There's a nice vignette on using htmltools::tagQuery : https://rstudio.github.io/htmltools/articles/tagQuery.html
+00:40:14	Oluwafemi Oyedele: Thank you for sharing!!!
+01:00:40	Lucio Cornejo: My internet came back, but I am so late now :(
+01:04:50	Arthur Shaw: My internet went out briefly too. It happens to us all.
+01:05:19	Lucio Cornejo: Thanks everyone, see you next week
 ```
 </details>
