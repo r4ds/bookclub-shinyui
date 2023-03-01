@@ -10,3 +10,5 @@ bookclub-shinyui.knit.md
 bookclub-shinyui_files
 libs
 *.html
+app.R
+app2.R
