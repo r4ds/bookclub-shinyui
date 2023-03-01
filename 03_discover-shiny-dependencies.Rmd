@@ -103,6 +103,25 @@ To sum up, shiny dependencies are necessary to make Shiny what it is! Importantl
 <summary> Meeting chat log </summary>
 
 ```
-LOG
+00:09:25	Oluwafemi Oyedele: Hi Federica, Good Day!!!
+00:10:49	Lucio Cornejo: Hello everyone
+00:10:55	Russ: Hi
+00:19:18	Lucio Cornejo: https://github.com/rstudio/shiny/issues/2630#issuecomment-533344017
+00:20:02	Trevin: I didn't explore this at all, but curious if Shiny for Python has different dependencies compared to R
+00:21:56	Arthur Shaw: Reacted to "I didn't explore thi..." with 🤔
+00:24:05	Russ: https://shiny.rstudio.com/articles/layout-guide.html
+00:24:09	Arthur Shaw: https://shiny.rstudio.com/articles/layout-guide.html
+00:25:51	Lucio Cornejo: https://getbootstrap.com/docs/5.0/layout/containers/
+00:30:48	Lucio Cornejo: about the Shiny for Python dependencies: https://shinylive.io/py/examples/
+00:34:57	Trevin: Awesome, thank you!
+00:35:12	Lucio Cornejo: https://github.com/rstudio/shiny/issues/2630#issuecomment-533344017
+00:37:10	Trevin: It's frozen for me too
+00:44:12	Lucio Cornejo: I think the removals work great for the example app that comes with the Shiny library
+00:44:20	Lucio Cornejo: specially due to the slider pressence
+00:47:10	Lucio Cornejo: we also lose reponseiveness when removing bootstrap
+00:47:15	Lucio Cornejo: once the width screen changes
+00:50:12	Lucio Cornejo: https://shiny.rstudio.com/reference/shiny/1.7.0/suppressdependencies
+00:52:08	Lucio Cornejo: If one doesn't want to use jQuery, this page is very useful: https://youmightnotneedjquery.com/
+00:54:59	Lucio Cornejo: Byee everyone. See you in three weeks!
 ```
 </details>
