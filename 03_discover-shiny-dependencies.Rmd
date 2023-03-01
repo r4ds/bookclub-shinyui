@@ -97,7 +97,7 @@ To sum up, shiny dependencies are necessary to make Shiny what it is! Importantl
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/SiRytDtkZIo")`
 
 <details>
 <summary> Meeting chat log </summary>
