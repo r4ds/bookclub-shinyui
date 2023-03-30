@@ -16,4 +16,5 @@ Imports:
     bs4Dash,
     purrr,
     rmarkdown,
-    shiny
+    shiny,
+    shinydashboard
