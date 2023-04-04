@@ -14,6 +14,7 @@ Depends:
 Imports: 
     bookdown,
     bs4Dash,
+    DiagrammeR,
     purrr,
     rmarkdown,
     shiny,
