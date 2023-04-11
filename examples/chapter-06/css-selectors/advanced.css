@@ -1,0 +1,93 @@
+/*
+  Nesting
+*/
+
+/* Every list's main items */
+ul > li {
+  color: green;
+}
+
+/* Nested list's items */
+li > ul > li {
+  color: red;
+}
+
+/* All items (main or sub) from list */
+ol li {
+  font-family: cursive;
+}
+
+
+/*
+  Parent selector
+*/
+div {
+  outline: 2px solid green;
+}
+div:has(p:active) {
+  outline: 2px dashed limegreen;
+}
+
+table {
+  border-collapse: collapse;
+}
+td {
+  border: 2px solid black;
+}
+
+table:has(td:hover) td:not(:hover) {
+  filter: blur(1px);
+}
+
+
+/*
+  Animations
+*/
+rect:hover {
+  animation: 2s linear slide-in;
+}
+@keyframes slide-in {
+  0% {
+    transform: translateX(0%);
+  }
+
+  50% {
+    transform: translateX(70%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+p {
+  background-color: red;
+}
+p:hover {
+  background-color: orange;
+  transition: background-color 2s;
+}
+
+
+/*
+  Layout and media queries
+*/
+span {
+  background-color: green;
+}
+
+.flex-container {
+  display: flex;
+  flex-wrap: wrap;
+
+}
+.flex-container > div {
+  width: 200px;
+  aspect-ratio: 3/2;
+  background-color: crimson;
+}
+@media (max-width: 600px) {
+  .flex-container > div {
+    width: 500px;
+  }
+}

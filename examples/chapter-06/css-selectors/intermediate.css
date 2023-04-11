@@ -1,0 +1,53 @@
+/* 
+  Pseudo-class 
+*/
+li:hover {
+  color: peru;
+}
+
+li:active {
+  font-size: 200%;
+}
+
+li:first-child {
+  text-decoration: underline;
+}
+
+li:not(:first-child) {
+  color: red;
+}
+
+
+/* 
+  Pseudo-element
+*/
+p::before {
+  content: "random words: ";
+}
+
+p::first-letter {
+  text-transform: uppercase;
+}
+
+p::after {
+  content: "blah blah blah blah";
+}
+
+
+/* 
+  Attributes
+*/
+div[data-nChildren="3"] {
+  border: 5px solid rgb(200, 100, 50, 0.5);
+  border-radius: 30px;
+}
+
+textarea[rows="5"] {
+  background-image: linear-gradient(
+    to right, crimson, skyblue
+  );
+}
+
+em[contenteditable="true"] {
+  opacity: 0.5;
+}

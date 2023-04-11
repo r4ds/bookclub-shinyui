@@ -2,12 +2,369 @@
 
 **Learning objectives:**
 
-- THESE ARE NICE TO HAVE BUT NOT ABSOLUTELY NECESSARY
+- Cover the basics of **CSS**.
+- Use **CSS** to customize a Shiny app appearance.
 
-## SLIDE 1
+## How to include CSS?
 
-- ADD SLIDES AS SECTIONS (`##`).
-- TRY TO KEEP THEM RELATIVELY SLIDE-LIKE; THESE ARE NOTES, NOT THE BOOK ITSELF.
+- Three methods to include CSS in a web page:
+    - **External**
+        - Points to an external file.
+        - It's the recommended way, due to being 
+        easier to maintain.
+        - **HTML way**: `<link rel="stylesheet" href="style.css"/>`
+        - **Shiny way** `tags$link(rel = "stylesheet", type="text/css", href="www/style.css")`
+    - **Internal**
+        - Insert `style` tag in `<head>`.
+        - Hard to maintain.
+        - *Shiny way*: `tags$head(tags$style("p {color: red;}"))`
+    - **Inline**
+        - Insert style at *tag level*.
+        - Hard to maintain.
+        - *Shiny way*: `p(style = "color:red;", "Red text")`
+
+## What does Shiny's creator think? {-}
+
+- Useful [comment](https://github.com/rstudio/shiny/issues/3225#issuecomment-751132164)
+from the author of Shiny, about how to include custom CSS files.
+
+- As noted in the previous comment, including a CSS file via the 
+`htmlDependency` function is not necessary if such CSS code is
+completely custom (no need to avoid dependencies' version conflicts).
+
+- Therefore, for **custom CSS**, simply use the `tags$link` method.
+
+## CSS selectors 
+
+- CSS selectors define on **which elements** to apply CSS rules.
+
+- [Table](https://www.w3schools.com/cssref/css_selectors.php) of basic CSS selectors.
+
+- A web page where this subchapter's CSS code is applied, can be found
+in the folder `examples/chapter-06/css-selectors` of this book's GitHub 
+[repository](https://github.com/r4ds/bookclub-shinyui).
+
+- It's recommended to use such web page in order to follow along
+the examples in this subchapter.
+
+- Aditionally, another page showcasing common CSS properties
+can be found in the repo folder `examples/chapter-06/common-css`
+
+### Basic
+
+- CSS declaration structure:
+    
+    ```css
+    selector {
+      property1: value1;
+      property2: value2;
+    }
+    ```
+
+### Select by tag name {-}
+
+- Select **one** HTML element via its tag name:
+
+    ```css
+    span {
+      color: red;
+    }
+    ```
+
+- Select **multiple** HTML elements via their tag name:
+
+    ```css
+    p, div {
+      background-color: lightsalmon;
+    }
+    ```
+
+### Select by class or id {-}
+
+- Example of attributes class and id: 
+`<p class="random" id="not-random">some text</p>`
+
+- Respective CSS selectors:
+
+    ```css
+    /* class 
+      Style for one or many elements
+    */
+    .random {
+      color: gold;
+      background-color: black;
+    }
+
+    /* id 
+      Style for only one specific element
+    */
+    #not-random {
+      color: crimson;
+    }
+    ```
+
+### Intermediate
+
+Now, we introduce selectors corresponding
+to the *state*, *part* or *attribute*
+of an HTML element.
+
+### Pseudo-class {-}
+
+- The [pseudo-class](https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes)
+(`:`) specifies a special **state** of the selected elements.
+
+- Examples:
+
+```css
+li:hover {
+  color: peru;
+}
+
+li:active {
+  font-size: 200%;
+}
+
+li:first-child {
+  text-decoration: underline;
+}
+
+li:not(:first-child) {
+  color: red;
+}
+```
+
+### Pseudo-element {-}
+
+- The [pseudo-element](https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements)
+(`::`) specifies a part to modify of the selected element.
+
+- Examples:
+
+```css
+p::before {
+  content: "random words: ";
+}
+
+p::first-letter {
+  text-transform: uppercase;
+}
+
+p::after {
+  content: "blah blah blah blah";
+}
+```
+
+- Eye-catching [application](https://www.youtube.com/watch?v=-VOUK-xFAyk&ab_channel=KevinPowell)
+of the `::before` and `::after` pseudo-elements.
+
+### Attributes {-}
+
+- [Attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes)
+are aditional values that configure or adjust the behaviour of HTML elements.
+
+- Examples:
+
+```css
+div[data-nChildren="3"] {
+  border: 5px solid rgb(200, 100, 50, 0.5);
+  border-radius: 30px;
+}
+
+textarea[rows="5"] {
+  background-image: linear-gradient(
+    to right, crimson, skyblue
+  );
+}
+
+em[contenteditable="true"] {
+  opacity: 0.5;
+}
+```
+
+### Advanced 
+
+### Nesting {-}
+
+- **Child** selector:
+    - Example:
+
+      ```css
+      /* Every list's main items */
+      ul > li {
+        color: green;
+      }
+
+      /* Nested list's items */
+      li > ul > li {
+        color: red;
+      }
+      ```
+
+- **Descendant selector**:
+    - Example: 
+
+    ```css
+    /* All items (main or sub) from list */
+    ol li {
+      font-family: cursive;
+    }
+    ```
+
+### Parent selector {-}
+
+- The CSS tools seen so far allow us to perform
+a **descendant selection** based on properties of ancestors,
+*not the other way around*.
+
+- The `:has()` pseudo-class allows us to perform an 
+**ancestor selection** based on properties of its descendants.
+
+- The [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has) 
+pseudo-class was added in the year 2022 to most modern browsers.
+
+- Such recent new feature introduces 
+[many posibilities](https://www.youtube.com/watch?v=OGJvhpoE8b4&ab_channel=KevinPowell)
+for web design.
+
+- Examples:
+
+```css
+div:has(p:active) {
+  outline: 2px dashed limegreen;
+}
+
+table:has(td:hover) td:not(:hover) {
+  filter: blur(1px);
+}
+```
+
+### Animations {-}
+
+- CSS keyframe syntax:
+
+```css
+@keyframes animation-name {
+  from { property: value; }     /* 0% */
+  to { property: new_value; }  /* 100% */
+}
+```
+
+- CSS syntax to **attach an animation**:
+
+```css
+selector {
+  animation: name, duration, delay, count, ...;
+  /* OR */
+  animation-name: ...;
+  animation-duration: ...,;
+  /* ... */
+}
+```
+
+- The [transition](https://developer.mozilla.org/en-US/docs/Web/CSS/transition)
+CSS property also allows us to **smoothly** change some property's values.
+
+- Examples:
+
+```css
+/* transition */
+p {
+  background-color: red;
+}
+p:hover {
+  background-color: orange;
+  transition: background-color 2s;
+}
+
+/* keyframes */
+rect:hover {
+  animation: 2s linear slide-in;
+}
+@keyframes slide-in {
+  0% {
+    transform: translateX(0%);
+  }
+
+  50% {
+    transform: translateX(70%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+```
+
+## Layout
+
+- HTML elements are modelled as boxes, 
+
+- HTML elements can either be **inline**
+(starts on the *same line*) or **block-level**
+(*generates a break line*).
+
+- [Inline vs block-level elements](https://developer.mozilla.org/en-US/docs/Web/HTML/Inline_elements)
+
+- Block-level elements can be modelled as a box, with
+the possibility to alter its dimensions via properties 
+such as `margin-top, margin-left, margin, padding` and 
+[more](https://subscription.packtpub.com/book/web-development/9781787281585/1/ch01lvl1sec03/the-box-model-and-block-versus-inline-elements).
+
+## Flexbox and CSS Grid {-}
+
+- The most popular CSS layout modules in recent years are 
+**Flexbox** and **CSS Grid**. 
+
+- Both layout modules support content placement in 
+**2 dimensions** ... one of the main reasons to 
+use one instead of the other is 
+[content **placement** vs content **flow**](https://webdesign.tutsplus.com/articles/flexbox-vs-css-grid-which-should-you-use--cms-30184).
+
+- > If you want to accurately control the position of items within a layout, CSS Grid is the way to go.
+
+- > Flexbox enables you to allocate space and align items flexibly (determined by the item content).
+
+## Media queries {-}
+
+- Depending on [factors](https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries) 
+such as the dimensions of the screen from which
+a website is accessed, its content may or not be 
+**efficiently organized** (or even readable).
+
+- Example using Flexbox:
+
+```html
+<div class="flex-container">
+  <div></div>
+  <div></div>
+  <div></div>
+</div>
+```
+
+```css
+.flex-container {
+  display: flex;
+  flex-wrap: wrap;
+
+}
+.flex-container > div {
+  width: 200px;
+  aspect-ratio: 3/2;
+  background-color: crimson;
+}
+@media (max-width: 600px) {
+  .flex-container > div {
+    width: 500px;
+  }
+}
+```
+
+## BEM 
+
+- <https://css-tricks.com/bem-101/>
+- <https://www.toptal.com/css/introduction-to-bem-methodology#:~:text=BEM%20stands%20for%20Block%20Element,CSS%20classes%20into%20independent%20modules.>
+
 
 ## Meeting Videos
 

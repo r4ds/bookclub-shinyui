@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>CSS selectors</title>
+  <link rel="stylesheet" href="./basic.css">
+  <link rel="stylesheet" href="./intermediate.css">
+  <link rel="stylesheet" href="./advanced.css">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <h2>Basic</h2>
+  
+  <h3>Tag name</h3>
+  
+  <p>Some text</p>
+  <div>
+    <p>Now <span>another</span> text</p>
+  </div>
+  
+  <h3>Class or Id</h3>
+
+  <p class="random">Random text</p>
+  <p class="random">Another random text</p>
+  <p class="random" id="not-random">Not random text</p>
+
+
+  <h2>Intermediate</h2>
+
+  <h3>Pseudo-class</h3>
+
+  <ol>
+    <li>First</li>
+    <li>Second</li>
+    <li>Third</li>
+  </ol>
+
+  <h3>Pseudo-element</h3>
+
+  <p>
+    this paragraph was supposed
+    to be quite large, but I did
+    not figure out what to write.
+  </p>
+
+
+  <h3>Attributes</h3>
+
+  <div data-nChildren="3" tabindex="0">
+    <strong>First child,</strong>
+    <strong>middle child,</strong>
+    <strong>spoiled (last) child.</strong>
+  </div>
+
+  <textarea rows="5">
+    lorem ipsum
+  </textarea>
+
+  <em contenteditable="true">
+    Write any quote here
+  </em>
+
+
+  <h2>Advanced</h2>
+
+  <h3>Nesting</h3>
+
+  <ul>
+    <li>
+      A
+      <ul>
+        <li>A.1</li>
+        <li>A.2</li>
+      </ul>
+    </li>
+    <li>
+      B
+      <ul>
+        <li>B.1</li>
+        <li>B.2</li>
+      </ul>
+    </li>
+  </ul>
+
+  <ol>
+    <li>A
+      <ol>
+        <li>A.1</li>
+        <li>A.2</li>
+      </ol>
+    </li>
+    <li>B
+      <ol>
+        <li>B.1</li>
+        <li>B.2</li>
+      </ol>
+    </li>
+  </ol>
+
+  <h3>Parent-selector</h3>
+
+  <div>
+    <p>Texto</p>
+    <p>más texto</p>
+  </div>
+
+  <table>
+    <tr>
+      <td>1</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>4</td>
+    </tr>
+  </table>
+
+
+  <h3>Animations</h3>
+
+
+  <p>text</p>
+
+  <svg width="400" height="110">
+    <rect width="300" height="100" style="fill:rgb(0,0,255); stroke-width:3; stroke:rgb(0,0,0)"/>
+  </svg>
+
+  <p>Animate background color change</p>
+
+
+  <h3>Layout and Media queries</h3>
+
+  <span>text</span>
+
+  <br>
+  <br>
+
+  <div class="flex-container">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+
+</body>
+</html>
