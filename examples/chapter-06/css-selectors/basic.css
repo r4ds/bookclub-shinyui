@@ -1,0 +1,23 @@
+/* 
+  Select by tag name 
+*/
+span {
+  color: red;
+}
+
+p, div {
+  background-color: lightsalmon;
+}
+
+
+/* 
+  Select by class or id
+*/
+.random {
+  color: gold;
+  background-color: black;
+}
+
+#not-random {
+  color: crimson;
+}

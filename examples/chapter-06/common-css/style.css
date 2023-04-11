@@ -1,0 +1,64 @@
+/* Center content */
+body {
+  margin: 0;
+  padding: 2.5em 0 0 0;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 3em;
+}
+
+/* Main title */
+h1 {
+  margin: 0;
+  text-decoration: underline;
+}
+
+/* Basic table styling */
+table {
+  border-collapse: collapse;
+}
+td {
+  cursor: pointer;
+  padding: 1em;
+  font-size: 3em;
+  text-align: center;
+  border: 2px solid black;
+}
+
+/* 
+  CSS specificity examples 
+  https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity
+*/
+.odd-row td {
+  transform: rotate(180deg);
+}
+.even-row td {
+  transform: scaleX(-1);
+}
+#last-row td {
+  transform: none;
+}
+
+/* When mouse is on top of element */
+td:hover {
+  background-color: crimson;
+}
+
+/* Simulate "when clicked" */
+td:active {
+  transform: none;
+  color: white;
+  background-color: black;
+  transition: color 500ms;
+}
+td:active::after {
+  content: " was clicked!";
+}
+
+/* For cells "not clicked" */
+table:has(td:active) td:not(:active) {
+  filter: blur(2.5px);
+  background-color: gold;
+  transition: background-color 350ms;
+}
