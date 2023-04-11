@@ -9,6 +9,6 @@ bookclub-shinyui.Rmd
 bookclub-shinyui.knit.md
 bookclub-shinyui_files
 libs
-*.html
+_book/*.html
 app.R
 app2.R
