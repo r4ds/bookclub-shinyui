@@ -2,12 +2,74 @@
 
 **Learning objectives:**
 
-- THESE ARE NICE TO HAVE BUT NOT ABSOLUTELY NECESSARY
+- Leverage internal Shiny JS tools to build highly interactive and optimized interfaces
 
-## SLIDE 1
+## Introduction
 
-- ADD SLIDES AS SECTIONS (`##`).
-- TRY TO KEEP THEM RELATIVELY SLIDE-LIKE; THESE ARE NOTES, NOT THE BOOK ITSELF.
+- Many functions can update the UI from the server
+- **update** functions
+  - `updateTextInput()`, `updateTabSetPanel()`
+- **toggle** functions
+  - `hideTab()`, `showTab()`
+- `renderUI()`, `insertUI()`, `removeUI()`
+
+## The renderUI case
+
+- `renderUI()` and `uiOutput` most famous way to **render** any HTML block from the **server**
+
+- `update____` and `toggle` tools are component-specific, only target the element to modify
+
+- `renderUI()` re-renders the block each time, implies poor performance in complex apps
+
+- Book examples
+
+## Other Shiny handlers
+
+### insertUI case
+
+- `insertUI` sends a R message through `session$sendInsertUI`, via the **websocket**
+
+- content is processed by `shiny:::processDeps()`
+
+- Finds and resolves any HTML dependency
+
+- For each dependency, makes sure the corresponding files can be accessed on the server with `createWebDependency()` and `addResourcePath()`
+
+- Returns a list of the HTML element and dependencies. The HTML will be accessed by `message.content.html` and dependencies by `message.content.deps`
+
+### Example
+
+- If the item is inserted, the item counter as well as the dropdown text are not
+
+- We may fix that by adding extra `insertUI()` and `removeUI()` to replace those parts
+
+- order matters: ensure that **remove** happens before **insert**
+
+- issue: a lot of server code!
+
+- issue: setting priorities in `observeEvent()` is a rather bad smell of poorly designed Shiny app
+
+## Custom handlers
+
+### Theory
+
+**session$sendCustomMessage(type, message)**. It works by pairing with the JS method **Shiny.AddCustomMessageHandler**, tightly linked by the type parameter
+
+- example
+
+### Toward custom UI managment functions
+
+- we go back to the `bs4Dash::dropdownMenu()` issue
+
+- create `insertMessageItem` with two parameters
+ - **item**, the HTML element we want to insert in the DOM
+ - **session**, used to send a message to JavaScript with `session$sendCustomMessage`
+- We give it a **type**, that is `add-message-item`, to be able to identify it from JavaScript with `Shiny.addCustomMessageHandler`
+- some JS stuff
+- This solution significantly lightens the server code since everything may be done on the JS side in one step
+
+### A chat system
+- book example
 
 ## Meeting Videos
 
