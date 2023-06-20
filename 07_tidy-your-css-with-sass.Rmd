@@ -2,12 +2,194 @@
 
 **Learning objectives:**
 
-- THESE ARE NICE TO HAVE BUT NOT ABSOLUTELY NECESSARY
+- How Sass might help write CSS
+- How `{sass}` offers R users access to Sass
 
-## SLIDE 1
+```{r knitr_options, include=FALSE, echo=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(
+  eval = FALSE,
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  out.width = '100%'
+)
+```
 
-- ADD SLIDES AS SECTIONS (`##`).
-- TRY TO KEEP THEM RELATIVELY SLIDE-LIKE; THESE ARE NOTES, NOT THE BOOK ITSELF.
+## Sass
+
+### What?
+
+- CSS is a style-sheet language
+- Sass is a CSS pre-processor--that is, another style-sheet language that writes CSS
+
+### Why?
+
+Writing CSS ...
+
+- **Can be tedious and/or repetitive.** Multiple rules might share the same properties. Multiple classes could share common rules. CSS might require. Sass has tools to keep code DRY. 
+- **Cannot compute.** Sometimes simple math operations makes writing CSS better.
+
+>  providing access to variables, mathematical operators, functions and loops, thereby reducing the code complexity and extending the possibilitie
+
+Read [Sass's product overview](https://sass-lang.com/guide) for more details.
+
+### How?
+
+- **Variables.** Avoid repetition of repeated properties. Define once. Refer often.
+- **Partial and modules.** Split monolithic CSS stylesheets into composable modules.
+- **Mixins and functions.** Write CSS by copy-paste or computation.
+- **Inheritance.** Like in OOP, child classes inherit from, and extend, parent classes.
+- **Flow control.** Rather than manually craft a class for each state, compose a class that is state-dependent.
+- **Nesting code.** Conveniently structured like HTML's hierarchy but translates to standard CSS.
+
+## {sass}
+
+Provides access to Sass from R to:
+
+- Write Sass code
+- Create CSS from SASS
+
+## Variables
+
+- Avoid repetition
+  - Set the value of a variable
+  - Refer to the variable rather than to a particular property
+- Set a default that others can override
+
+In CSS
+
+```{css}
+// if there is a shared property,
+// it needs to be written in each rule
+
+p {
+  color: red;
+}
+
+a {
+  color: red;
+}
+```
+
+In Sass:
+
+```{css}
+// store shared property in a variable
+// refer to that variable in each rule that uses that property
+
+$my_color: red;
+
+p {
+  color: $my_color;
+}
+
+a {
+  color: $my_color;
+}
+```
+
+To set a default in Sass, write `!default` so that other developers can override the value while adopting your module:
+
+```{css}
+// now developers can provide their value
+
+$my_color: ! red default;
+
+p {
+  color: $my_color;
+}
+
+a {
+  color: $my_color;
+}
+```
+
+See more on how to provide one's own value in Sass documentation [here](https://sass-lang.com/documentation/variables#default-values).
+
+## Partials and modules
+
+### Why
+
+- Make CSS composable rather than monolithic
+- Capture one set of rules in one file (e.g., fonts, helpers, etc.)
+- Compose a main Sass file that imports partials/modules as needed
+
+### How
+
+- Create a files that start with `_`. Sass will recognize them as partials.
+- Import them with the `@import` directive. (Update: Sass says to [use `@use` instead](https://sass-lang.com/documentation/at-rules/import), since `@import` may be deprecated.)
+
+See evocative example [in the book](https://unleash-shiny.rinterface.com/beautify-sass.html#partials-and-modules).
+
+## Mixins and functions
+
+### Mixins
+
+- Acts as template of reusable properties
+- Returns CSS
+- Starts definition with `@mixin`
+- Use with `@include` directive
+
+See [example from the book](https://unleash-shiny.rinterface.com/beautify-sass.html#mixins).
+
+### Functions
+
+- Perform calculations--with mathematical operations, which is not possible in CSS
+- Returns values to be used used in CSS rules
+- Define with `@function` directive
+- Use with function name (and, if applicable, arguments) inside CSS rule
+
+See [example from the book](https://unleash-shiny.rinterface.com/beautify-sass.html#functions).
+
+## Extend/inheritance
+
+- Create classes that extend/inherit from a base class
+- Define base class with `%parent-class`
+- Create child classes that inherit from parent with `@extend` directive and reference to `%parent-class`
+
+See [example from the book](https://unleash-shiny.rinterface.com/beautify-sass.html#extendinheritance).
+
+## Flow control
+
+### if/else
+
+- Logical switch
+- Define switch with `@if` and `@else` directives
+- Resolves to CSS
+
+See [example from the book](https://unleash-shiny.rinterface.com/beautify-sass.html#if-and-else), which builds on inheritance example in the prior section.
+
+### Loops
+
+- Same structure as JavaScript loop
+- Substitute values through string interpolation `#{...}`
+
+## Nesting code
+
+To target a nested element ...
+
+### ... with CSS
+
+```{css}
+div {
+  background-color: black;
+}
+
+div p {
+  color: white;
+}
+```
+
+### ... with Sass
+
+```{scss}
+div {
+  background-color: black;
+  p {
+    color: white;
+  }
+}
+```
 
 ## Meeting Videos
 
