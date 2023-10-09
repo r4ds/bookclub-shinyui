@@ -257,12 +257,14 @@ resolveDependencies(icon_deps)
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/BdQMvsIN6Pg")`
 
 <details>
 <summary> Meeting chat log </summary>
 
 ```
-LOG
+00:02:21	Russ:	Hi everyone
+00:17:23	Russ:	TODO: Why is tags$head for a local stylesheet potentially bad when working with other developers
+00:24:57	Russ:	TODO: What is the benefit of htmlDependency for an external html dependency
 ```
 </details>

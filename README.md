@@ -12,7 +12,7 @@ As we read, we are producing [notes about the book](https://r4ds.io/shinyui).
 
 If you would like to present, please see the sign-up sheet for your cohort (linked below, and pinned in the [#book_club-shinyui](https://rfordatascience.slack.com/archives/C04JGCCFUJD) channel on Slack)!
 
-- [Cohort 1](https://docs.google.com/spreadsheets/d/1tRFLTmqlapDMnusTXJ7Ce3rq4acMWHWz8fE636-T510/edit?usp=sharing) (started 2023-02-14): [Tuesdays, 10:00am CST/CDT](https://www.timeanddate.com/worldclock/converter.html?iso=20230214T160000&p1=24&p2=1440) | [meeting videos](https://youtube.com/playlist?list=PL3x6DOfs2NGj-2gwtHsnJ0CwpoChYjrh6)
+- Cohort 1 (started 2023-02-14, finished 2023-10-03): [meeting videos](https://youtube.com/playlist?list=PL3x6DOfs2NGj-2gwtHsnJ0CwpoChYjrh6)
 
 <hr>
 

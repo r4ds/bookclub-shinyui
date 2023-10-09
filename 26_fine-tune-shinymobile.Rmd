@@ -13,12 +13,14 @@
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/e1rkAjbc2nA")`
 
 <details>
 <summary> Meeting chat log </summary>
 
 ```
-LOG
+00:05:07	Trevin Flickinger:	I snuck in
+00:07:49	Russ Hyde:	begin
+00:54:08	Arthur:	https://rinterface.github.io/shinyMobile/articles/Tabs-Layout.html
 ```
 </details>

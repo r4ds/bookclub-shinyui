@@ -195,12 +195,19 @@ div {
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/Rf_Qn6MOXAI")`
 
 <details>
 <summary> Meeting chat log </summary>
 
 ```
-LOG
+00:08:00	Lucio Cornejo:	could you repeat the comment about variables?
+00:15:40	Lucio Cornejo:	https://developer.mozilla.org/en-US/docs/Web/CSS/calc
+00:29:38	Lucio Cornejo:	A comparison between Sass variables and CSS "variables" (custom properties): https://css-tricks.com/difference-between-types-of-css-variables/
+00:51:35	Lucio Cornejo:	+, - , * and / are supported by calc() in CSS
+00:59:51	Lucio Cornejo:	Since two weeks ago, Google Chrome supports CSS nesting: https://www.youtube.com/watch?v=KGMe4OyXYEc
+01:01:46	Lucio Cornejo:	IE always gets bullied :(
+01:09:24	Lucio Cornejo:	i felt the same thing for the css chapter
+01:09:34	Lucio Cornejo:	thank you
 ```
 </details>

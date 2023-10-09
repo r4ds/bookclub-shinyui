@@ -13,12 +13,15 @@
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/wZWKx2NHXkw")`
 
 <details>
 <summary> Meeting chat log </summary>
 
 ```
-LOG
+00:03:35	Arthur:	Sorry I'm late, Russ
+00:04:52	Russ Hyde:	Begin
+00:44:30	Arthur:	The relevant xkcd comic: https://xkcd.com/1638/
+01:08:46	Trevin Flickinger:	I think I missed those talks. Need to go back and watch the videos
 ```
 </details>

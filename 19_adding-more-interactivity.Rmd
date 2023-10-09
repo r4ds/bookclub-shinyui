@@ -13,12 +13,17 @@
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/d5jBMRQ7Gv4")`
 
 <details>
 <summary> Meeting chat log </summary>
 
 ```
-LOG
+00:05:57	Russ Hyde:	begin
+00:12:49	Russ Hyde:	https://tabler.io/docs/components/progress
+00:48:41	Trevin Flickinger:	I have not
+00:55:41	Trevin Flickinger:	Thanks Arthur, apologies for running late
+00:56:26	Trevin Flickinger:	I’m signed up for next week
+00:56:27	Russ Hyde:	end
 ```
 </details>
