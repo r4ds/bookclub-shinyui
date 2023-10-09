@@ -152,12 +152,24 @@ ui <- htmlTemplate(
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/ibvWVALp19M")`
 
 <details>
 
 <summary>Meeting chat log</summary>
-
-    LOG
-
+```
+00:06:30	Jack Penzer:	Afternoon!
+00:06:45	Arthur Shaw:	Reacted to "Afternoon!" with 👋
+00:06:53	Federica Gazzelloni:	Hello!
+00:07:25	Jack Penzer:	Have to take this from my desk in an open plan office so I’m mic off today, sorry!
+00:07:40	Federica Gazzelloni:	Sure!
+00:12:53	Russ:	Hi everyone
+00:25:34	Lucio Cornejo:	https://umbraco.com/knowledge-base/http-status-codes/
+00:26:08	Arthur Shaw:	Or my favorite, http cats: https://httpcats.com/  😉
+00:26:48	Lucio Cornejo:	Reacted to "Or my favorite, http..." with ❤️
+00:46:43	Lucio Cornejo:	https://shiny.rstudio.com/articles/templates.html
+01:02:50	Lucio Cornejo:	thank you, that was a difficult chapter
+01:03:19	Arthur Shaw:	Agreed. Nice presentation. I'm going to have to re-read to improve my understanding.
+01:04:27	Lucio Cornejo:	thank you, see you next week, everyone
+```
 </details>

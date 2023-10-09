@@ -13,12 +13,15 @@
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/WQpV3E69WF4")`
 
 <details>
 <summary> Meeting chat log </summary>
 
 ```
-LOG
+00:02:06	Russ:	Hi everyone
+00:04:21	Russ:	start
+00:08:07	Russ:	https://shiny.posit.co/r/articles/build/js-events/
+00:58:12	Russ:	end
 ```
 </details>

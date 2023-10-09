@@ -13,12 +13,17 @@
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/7dX92ChRQTw")`
 
 <details>
 <summary> Meeting chat log </summary>
 
 ```
-LOG
+00:04:58	Russ Hyde:	Hi
+00:06:33	Russ Hyde:	begin
+00:17:25	Russ Hyde:	countup.js was usedin a previous bookclub, JS4R
+00:40:42	Trevin Flickinger:	No concerns on your sanity 😄
+00:41:13	Arthur Shaw:	Reacted to "No concerns on your ..." with 😉
+00:59:22	Russ Hyde:	end
 ```
 </details>

@@ -13,12 +13,20 @@
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/JFIdjnvMfz8")`
 
 <details>
 <summary> Meeting chat log </summary>
 
 ```
-LOG
+00:05:04	Trevin Flickinger:	It looks interesting
+00:05:10	Russ:	begin
+00:16:14	Arthur Shaw:	Did the video stop for anyone else?
+00:16:28	Trevin Flickinger:	Yeah, looks like we lost him
+00:19:10	Trevin Flickinger:	Welcome back
+00:19:18	Trevin Flickinger:	It says it’s still recording
+00:50:50	Trevin Flickinger:	I also have zero experience with any mobile development
+00:55:09	Trevin Flickinger:	Thanks!
+00:55:20	Russ:	end
 ```
 </details>

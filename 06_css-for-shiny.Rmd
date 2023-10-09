@@ -370,12 +370,27 @@ a website is accessed, its content may or not be
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/mx7RrARw930")`
 
 <details>
 <summary> Meeting chat log </summary>
 
 ```
-LOG
+00:11:24	Russ:	Hi everyone
+00:11:27	iPhone:	Hello
+00:29:35	Lucio Cornejo:	hello :(
+00:30:26	Federica Gazzelloni:	Hello
+00:31:37	iPhone:	Hello!!!
+00:33:43	Lucio Cornejo:	https://github.com/rstudio/shiny/issues/3225#issuecomment-751132164
+00:43:03	Russ:	I don't think I've used `:not` before, that's pretty neat
+00:46:10	Lucio Cornejo:	https://www.youtube.com/watch?v=-VOUK-xFAyk&ab_channel=KevinPowell
+00:57:11	Lucio Cornejo:	https://www.youtube.com/watch?v=OGJvhpoE8b4&ab_channel=KevinPowell
+01:04:08	Arthur Shaw:	@lucio, is CSS "calculating" the transition from one state to another?
+01:05:15	Arthur Shaw:	Replying to "@lucio, is CSS "calc..."
+
+For the translation property
+01:08:47	Arthur Shaw:	Gotta drop off for another meeting. Look forward to watching the last part of the recording!
+
+Thanks for the great presentation.
 ```
 </details>

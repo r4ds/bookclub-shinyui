@@ -13,12 +13,17 @@
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/bmR7inRFrVE")`
 
 <details>
 <summary> Meeting chat log </summary>
 
 ```
-LOG
+00:04:28	Russ Hyde:	begin
+00:15:16	Oluwafemi Oyedele:	Good Day All, Sorry for joining late!!!
+00:29:50	Trevin Flickinger:	https://getbootstrap.com/docs/4.0/components/navbar/
+00:56:53	James Arthur Shaw:	Here's the new location of the svg icons, I believe: https://preview.tabler.io/icons.html
+01:01:13	Russ Hyde:	end
+01:01:14	Trevin Flickinger:	stop
 ```
 </details>

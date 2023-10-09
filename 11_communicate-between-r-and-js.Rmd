@@ -13,12 +13,20 @@
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/9dTKN04Hli0")`
 
 <details>
 <summary> Meeting chat log </summary>
 
 ```
-LOG
+00:03:23	Russ:	Hi
+00:08:26	Russ:	start
+00:08:31	Trevin Flickinger:	Reacted to "start" with 👍
+01:00:08	Russ:	https://shiny.rstudio.com/py/docs/deploy.html#:~:text=Shiny%20uses%20WebSockets%20for%20most,networks%20interfere%20with%20WebSocket%20traffic.
+01:01:06	Arthur Shaw:	Gotta hop to another meeting. Thanks for the great presentation, Russ!
+01:01:53	Oluwafemi Oyedele:	Thank you very much!!!
+01:02:51	Trevin Flickinger:	Thanks Russ
+01:02:53	Russ:	end
+01:02:58	Russ:	See youy later everyone
 ```
 </details>

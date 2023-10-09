@@ -13,12 +13,25 @@
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/5WoA2EVflOU")`
 
 <details>
 <summary> Meeting chat log </summary>
 
 ```
-LOG
+00:03:26	Arthur Shaw:	Hi, Trevin. Sorry I'm late.
+00:03:51	Trevin Flickinger:	No worries, I’ll wait a couple more minutes to see if Russ shows up
+00:04:26	Arthur Shaw:	Reacted to "No worries, I’ll wai..." with 👍
+00:05:06	Russ Hyde:	Hi. Am I audible
+00:06:35	Russ Hyde:	begin
+00:15:49	Russ Hyde:	Haha, I did think about writing one. Then I had a kid
+00:16:29	Russ Hyde:	https://www.routledge.com/Testing-R-Code/Cotton/p/book/9780367782375
+00:17:38	Russ Hyde:	https://books.ropensci.org/http-testing/index.html
+00:29:01	Arthur Shaw:	Consider rlang::abort in place of stop. Consider rlang::try_fetch in place of tryCatch and/or withCallingHandlers. Some nice vignettes on this:
+
+- https://rlang.r-lib.org/reference/topic-error-call.html
+- https://rlang.r-lib.org/reference/topic-error-chaining.html
+01:03:18	Trevin Flickinger:	stop
+01:03:20	Russ Hyde:	end
 ```
 </details>

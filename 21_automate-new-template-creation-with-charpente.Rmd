@@ -13,12 +13,16 @@
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/hzn4Kn4-cD4")`
 
 <details>
 <summary> Meeting chat log </summary>
 
 ```
-LOG
+00:05:34	Russ Hyde:	begin
+00:08:30	Trevin Flickinger:	Yeah, I’m utilizing golem now at work
+00:58:15	Russ Hyde:	https://github.com/RinteRface/shinyMobile has the srcjs folder
+00:59:28	Russ Hyde:	They load {charpente} in https://github.com/RinteRface/shinyMobile/blob/master/tools/build.R
+01:02:36	Russ Hyde:	end
 ```
 </details>

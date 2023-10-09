@@ -13,12 +13,24 @@
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/XlbYLjapC2g")`
 
 <details>
 <summary> Meeting chat log </summary>
 
 ```
-LOG
+00:04:07	Trevin Flickinger (he/him):	start
+00:04:07	Russ Hyde:	begin
+00:06:53	James Arthur Shaw:	Sorry I'm late
+00:10:48	Russ Hyde:	I found about shinyMobile::preview_mobile() this week
+00:17:02	Trevin Flickinger (he/him):	https://web.dev/learn/pwa/
+00:37:41	Russ Hyde:	https://github.com/RinteRface/shinyMobile/tree/master/inst/examples/gallery/www
+00:50:01	Russ Hyde:	Carry on. I've been video bombed by a 4yo
+00:50:08	James Arthur Shaw:	Reacted to "Carry on. I've been ..." with 😂
+00:52:16	Trevin Flickinger (he/him):	https://web.dev/learn/pwa/installation/
+00:53:05	Trevin Flickinger (he/him):	https://github.com/pedrocoutinhosilva/shiny.pwa
+00:54:34	Russ Hyde:	I had a look at tthe workshop mentioned at the bottom of the chapter: https://rencontresr2021.rinterface.com/?panelset1=partie-12#1 . It's interesting, they use an additional tool {truelle} for scaffolding a golem/shinyMobile app
+00:57:43	Trevin Flickinger (he/him):	The last two chapters may be short enough to be combined
+00:58:37	Russ Hyde:	end
 ```
 </details>

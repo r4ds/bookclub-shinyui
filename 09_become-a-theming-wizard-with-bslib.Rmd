@@ -13,12 +13,12 @@
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/6SiCnvJnLvE")`
 
 <details>
 <summary> Meeting chat log </summary>
 
 ```
-LOG
+00:30:02	Arthur Shaw:	I'm trying to investigate which/how many Bootstrap variables bslib can target. This vignette looks like a good place to explore: https://rstudio.github.io/bslib/articles/bs5-variables.html
 ```
 </details>

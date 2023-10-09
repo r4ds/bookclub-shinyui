@@ -75,12 +75,20 @@
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/l6BIOSHNCZA")`
 
 <details>
 <summary> Meeting chat log </summary>
 
 ```
-LOG
+00:03:14	Oluwafemi Oyedele:	Hello, Good Evening All!!!
+00:03:24	James Arthur Shaw:	Reacted to "Hello, Good Evening ..." with 👋
+00:03:24	Russ Hyde:	Hi everyone
+00:08:34	Russ Hyde:	start
+00:19:38	Federica Gazzelloni:	What invalidateLater(4000) would do instead?
+01:01:58	Oluwafemi Oyedele:	Thank you!!!
+01:04:57	Trevin Flickinger:	Note the session$ns that actually makes sure this function can work within shiny modules
+01:06:38	Trevin Flickinger:	stop
+01:06:42	Russ Hyde:	bye
 ```
 </details>

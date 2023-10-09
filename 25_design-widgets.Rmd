@@ -13,12 +13,16 @@
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/xUWa5u2Rono")`
 
 <details>
 <summary> Meeting chat log </summary>
 
 ```
-LOG
+00:02:00	Russ Hyde:	Can you hear me Arthur
+00:03:21	Russ Hyde:	begin
+00:56:43	Trevin Flickinger (he/him):	I’ll be there in person
+00:57:13	Russ Hyde:	end
+00:57:18	Trevin Flickinger (he/him):	👋
 ```
 </details>

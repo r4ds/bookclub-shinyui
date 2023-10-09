@@ -13,12 +13,16 @@
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/5_IVbyf2x00")`
 
 <details>
 <summary> Meeting chat log </summary>
 
 ```
-LOG
+00:04:04	Oluwafemi Oyedele:	Hi Trevin!!!
+00:04:30	Trevin Flickinger:	Good morning/afternoon/evening Oluwafemi!
+00:09:00	Oluwafemi Oyedele:	No!!!
+00:51:53	Trevin Flickinger:	We can always carry over into next week
+00:52:12	Oluwafemi Oyedele:	Its ok with me also!!!
 ```
 </details>

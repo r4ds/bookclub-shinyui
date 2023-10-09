@@ -13,12 +13,17 @@
 
 ### Cohort 1
 
-`r knitr::include_url("https://www.youtube.com/embed/URL")`
+`r knitr::include_url("https://www.youtube.com/embed/UIrXSewtDCE")`
 
 <details>
 <summary> Meeting chat log </summary>
 
 ```
-LOG
+00:21:36	Russ:	TODO: find link for Joe Cheng's talk about styling shiny
+00:47:53	Jack Penzer:	To preview the code, use OSUICode::get_example("fresh/bs4Dash-custom").
+00:48:31	Russ:	https://github.com/DivadNojnarg/OSUICode/blob/master/inst/fresh/shinydashboardPlus-cyberpunk/app.R
+00:49:02	Arthur Shaw:	https://rstudio.github.io/shinyuieditor/
+00:49:18	Russ:	https://rstudio.github.io/shinyuieditor/
+00:54:52	Russ:	https://developer.chrome.com/docs/lighthouse/accessibility/
 ```
 </details>
