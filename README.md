@@ -1,16 +1,16 @@
-# R4DS Outstanding User Interfaces with Shiny Book Club
+# DSLC Outstanding User Interfaces with Shiny Book Club
 
 ALSO ADD PLACEHOLDERS FOR ALL CHAPTERS BY COPYING 01.Rmd (IDEALLY ALSO UPDATE TITLES WITHIN THE FILES), THEN DELETE THIS SENTENCE.
 
-Welcome to the R4DS Outstanding User Interfaces with Shiny Book Club!
+Welcome to the DSLC Outstanding User Interfaces with Shiny Book Club!
 
 We are working together to read [_Outstanding User Interfaces with Shiny_](https://unleash-shiny.rinterface.com/index.html) by David Granjon (Chapman & Hall, copyright August 31, 2022, [9780367645267](https://www.routledge.com/Outstanding-User-Interfaces-with-Shiny/Granjon/p/book/9780367645267)).
-Join the [#book_club-shinyui](https://rfordatascience.slack.com/archives/C04JGCCFUJD) channel on the [R4DS Slack](https://r4ds.io/join) to participate.
-As we read, we are producing [notes about the book](https://r4ds.io/shinyui).
+Join the [#book_club-shinyui](https://dslcio.slack.com/archives/C04JGCCFUJD) channel on the [DSLC Slack](https://dslc.io/join) to participate.
+As we read, we are producing [notes about the book](https://dslc.io/shinyui).
 
 ## Meeting Schedule
 
-If you would like to present, please see the sign-up sheet for your cohort (linked below, and pinned in the [#book_club-shinyui](https://rfordatascience.slack.com/archives/C04JGCCFUJD) channel on Slack)!
+If you would like to present, please see the sign-up sheet for your cohort (linked below, and pinned in the [#book_club-shinyui](https://dslcio.slack.com/archives/C04JGCCFUJD) channel on Slack)!
 
 - Cohort 1 (started 2023-02-14, finished 2023-10-03): [meeting videos](https://youtube.com/playlist?list=PL3x6DOfs2NGj-2gwtHsnJ0CwpoChYjrh6)
 
@@ -41,5 +41,5 @@ Do these steps each time you present another chapter:
 10. When your PR has been accepted ("merged"), `usethis::pr_finish()` to close out your branch and prepare your local repository for future work.
 11. Now that your local copy is up-to-date with the main repo, you need to update your remote fork. Run `gert::git_push("origin")` or click the `Push` button on the `Git` tab of Rstudio.
 
-When your PR is checked into the main branch, the bookdown site will rebuild, adding your slides to [this site](https://r4ds.io/shinyui).
+When your PR is checked into the main branch, the bookdown site will rebuild, adding your slides to [this site](https://dslc.io/shinyui).
 
