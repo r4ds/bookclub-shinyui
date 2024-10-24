@@ -13,6 +13,7 @@ As we read, we are producing [notes about the book](https://dslc.io/shinyui).
 If you would like to present, please see the sign-up sheet for your cohort (linked below, and pinned in the [#book_club-shinyui](https://dslcio.slack.com/archives/C04JGCCFUJD) channel on Slack)!
 
 - Cohort 1 (started 2023-02-14, finished 2023-10-03): [meeting videos](https://youtube.com/playlist?list=PL3x6DOfs2NGj-2gwtHsnJ0CwpoChYjrh6)
+- Cohort 2 (started 2024-11-08): [Fridays, 19:00 Central (America/Chicago)](https://www.timeanddate.com/worldclock/converter.html?iso=20241109T010000&p1=24&p2=1440) | [meeting videos](https://www.youtube.com/playlist?list=PL3x6DOfs2NGhoKz3RSvwGxJYoCvE4MbnM)
 
 <hr>
 
