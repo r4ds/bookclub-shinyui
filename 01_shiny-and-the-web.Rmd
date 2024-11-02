@@ -1,5 +1,6 @@
 # Shiny and the Web
 
+
 **Learning objectives:**
 
 - Basic introduction to web apps and shiny
@@ -7,7 +8,7 @@
 - How to create HTML in R
 - How to add HTML, CSS, JavaScript to a shiny app
 
-## Preamble
+## Preamble {-}
 
 Example code for the book can be found on [GitHub](https://github.com/DivadNojnarg/OSUICode/)
 
@@ -18,33 +19,11 @@ remotes::install_github("DivadNojnarg/OSUICode")
 library("OSUICode")
 ```
 
-Prerequisites:
-
-- Essential
-  - Experience with shiny
-
-- Nonessential
-  - basic knoweledge of web technology (HTML, CSS, JS)
-
-Scope:
-
-- professional look and feel
-- develop input widgets
-- handle JS and CSS
-- mobile-friendly
-- integrate react
-
-Part 1 of the book:
-
-- Links between shiny and classic web technology (CSS, HTML, JS)
-- Explore the web dependencies in shiny (jQuery, Bootstrap)
-- Use {htmltools} to create / manipulate HTML and manage web dependencies
-
-## Introduction
+## Introduction {-}
 
 The data scientist route to web apps:
 
-- Learn R ==> use {shiny} ==> make interactive web apps
+- Learn R/Python ==> use `{shiny}` ==> make an apps in **minutes**
 
 The typical route
 
@@ -56,29 +35,26 @@ The typical route
 library("shiny")
 ```
 
-## Shiny generates HTML code
+## Shiny generates HTML code {-}
 
 ```{r hello_element, results="asis"}
-# We use `message` just to help display the raw HTML that is produced
-message(
-  h1("Hello world")
-)
+h1("Hello world") |> message()
 ```
 
-We just made HTML from R
+- We just made HTML from R.
 
-We can use other web tools to customise shiny apps
+- Being able to generate HTML code from R allows the developer to **remain focused** on the main task.
 
-- custom HTML (for content)
-- custom CSS (for styling)
-- custom JavaScript (for interactivitiy)
+Shiny apps can be deeply **customized** with
+
+- Custom HTML (for content)
+- Custom CSS (for styling)
+- Custom JavaScript (for interactivitiy)
 - ... and make use of many templates and packages that are already written
 
-## Be a DJ
+## Be a DJ {-}
 
-Here is [36 lines of shiny code](
-  https://github.com/DivadNojnarg/OSUICode/blob/master/inst/intro/dj-system/app.R
-) (plus a few images and styles etc).
+Here is [36 lines of shiny code](https://github.com/DivadNojnarg/OSUICode/blob/master/inst/intro/dj-system/app.R) (plus a few images and styles etc).
 
 ```r
 # Not rendered in the book
@@ -87,23 +63,55 @@ remotes::install_github("Athospd/wavesurfer")
 OSUICode::run_example("intro/dj-system", package = "OSUICode")
 ```
 
-## HTML basics
+<p style="text-align:center;"> 
+![](image/01-shiny-and-the-web/01-dj-app.png){#center width=50% fig-align="center"}
+</p>
 
-Resources:
 
-- MDN ["Introduction to HTML"](https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML)
+## HTML basics {-}
 
-HTML
+HTML = "HyperText Markup Language"
 
-- "Hypertext Markup Language"
-- content for a web page
-- ... and context for that content
+An HTML file contains __tags__ that can be:
 
-Tags:
 
-- Paired tags `<p>A paragraph</p>`
-- Self-closing tags `<img src="url-for-the-picture.jpg" alt="description of the picture"/>`
-- Purpose: structure, control and formatting
+- __Paired__
+
+```
+<!-- paired-tags -->
+<p>A paragraph</p>
+<div></div>
+```
+
+- __Self-closing__
+
+```
+<img src="url-for-the-picture.jpg" alt="description of the picture"/>
+<iframe/>
+<input/>
+<br/>
+```
+
+## Tags by role {-}
+
+- __Structure__ tags to constitute the skeleton of the HTML page
+
+```
+<title></title>
+<head></head>
+<body></body>
+```
+
+- __Control__ tags to include external resources, provide interactivity with the user.
+  - script
+  - inputs
+  - buttons
+  
+- __Formatting__ tags to change wrapped text properties like its _size_ and _font_.
+
+
+
+- __Purpose__: structure, control and formatting
 
 The "Box Model"
 
