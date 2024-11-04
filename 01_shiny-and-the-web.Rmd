@@ -1,23 +1,11 @@
 # Shiny and the Web
 
-
 **Learning objectives:**
 
 - Basic introduction to web apps and shiny
 - Purpose of HTML, CSS, JavaScript
 - How to create HTML in R
 - How to add HTML, CSS, JavaScript to a shiny app
-
-## Preamble {-}
-
-Example code for the book can be found on [GitHub](https://github.com/DivadNojnarg/OSUICode/)
-
-To install the book-associated package
-
-```r
-remotes::install_github("DivadNojnarg/OSUICode")
-library("OSUICode")
-```
 
 ## Introduction {-}
 
@@ -57,23 +45,18 @@ Shiny apps can be deeply **customized** with
 Here is [36 lines of shiny code](https://github.com/DivadNojnarg/OSUICode/blob/master/inst/intro/dj-system/app.R) (plus a few images and styles etc).
 
 ```r
-# Not rendered in the book
-
 remotes::install_github("Athospd/wavesurfer")
 OSUICode::run_example("intro/dj-system", package = "OSUICode")
 ```
 
 <p style="text-align:center;"> 
-![](image/01-shiny-and-the-web/01-dj-app.png){#center width=50% fig-align="center"}
+![](image/01-shiny-and-the-web/01-dj-app.png){width=50%}
 </p>
 
 
-## HTML basics {-}
+## HTML tags basic types {-}
 
 HTML = "HyperText Markup Language"
-
-An HTML file contains __tags__ that can be:
-
 
 - __Paired__
 
@@ -92,13 +75,13 @@ An HTML file contains __tags__ that can be:
 <br/>
 ```
 
-## Tags by role {-}
+## HTML tags role types {-}
 
 - __Structure__ tags to constitute the skeleton of the HTML page
 
-```
-<title></title>
+```html
 <head></head>
+<title></title>
 <body></body>
 ```
 
@@ -110,10 +93,18 @@ An HTML file contains __tags__ that can be:
 - __Formatting__ tags to change wrapped text properties like its _size_ and _font_.
 
 
+## Box Model {-}
 
-- __Purpose__: structure, control and formatting
+All elements displayed are contened by a box with properties like:
 
-The "Box Model"
+- Padding: Internal margins.
+- Margins: Space between multiple elements.
+- Width
+- Height
+
+<p style="text-align:center;"> 
+![](image/01-shiny-and-the-web/02-box-model.jpg){width=65%}
+</p>
 
 - defines the margins and dimensions of each element
 
@@ -139,7 +130,7 @@ Add properties to your HTML elements!
 <span class="awesome-item"></span>
 ```
 
-## The simplest HTML skeleton
+## The simplest HTML skeleton {-}
 
 "Hello, World!" in HTML:
 
@@ -156,8 +147,14 @@ Add properties to your HTML elements!
 </html>
 ```
 
+<div style="border: 1px solid black;">
+ <p>Hello World</p>
+</div>
+
 We made an HTML element using shiny above.
 Now let's make a whole web page:
+
+## The simplest HTML skeleton {-}
 
 ```r
 # Not ran
@@ -166,6 +163,10 @@ server <- function(input, output, session) {}
 
 shinyApp(ui, server)
 ```
+
+<div style="border: 1px solid black;">
+ <p>Hello World</p>
+</div>
 
 Run this app.
 Then inspect the source.

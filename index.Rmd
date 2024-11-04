@@ -114,3 +114,15 @@ By the end of that book, we should be able to __entirely customize__ any Shiny a
 6. Mobile web development with [shinyMobile](https://github.com/RinteRface/shinyMobile)
 
 7. Exposes other alternatives like React with [reactR](https://github.com/react-R/reactR) or tools like webpack and the JSX syntax.
+
+
+## Getting Example code {-}
+
+[OSUICode](https://github.com/DivadNojnarg/OSUICode/) repo has the needed code.
+
+To install the book-associated package
+
+```r
+remotes::install_github("DivadNojnarg/OSUICode")
+library("OSUICode")
+```
