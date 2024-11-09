@@ -29,6 +29,7 @@ HTML elements directly from R:
 ```{r}
 #| echo: false
 # Render the tag instead of printing its code
+library(shiny)
 library(knitr)
 library(htmltools)
 registerS3method(
