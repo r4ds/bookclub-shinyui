@@ -25,8 +25,7 @@ This companion follows the [Data Science Learning Community Code of Conduct](htt
 
 ## Book club meetings {-}
 
-- Each week, a volunteer will present a chapter from the book after assigning it to themselves in the [Volunteers Spreadsheet](https://docs.google.com/spreadsheets/d/1HhA4HMB5LgpyPaF2KZbwwcdtB5RWfZrBbpJ2yXO0E-k/edit?usp=sharing)
-  
+- Each week, a volunteer will present a chapter from the book after assigning it to themselves in the **Volunteers Spreadsheet**
 -  Presentations: 
    -  Review of material
    -  Questions you have
@@ -36,7 +35,7 @@ This companion follows the [Data Science Learning Community Code of Conduct](htt
 
 - More information about how to present is available at [github.com/r4ds/bookclub-shinyui](https://github.com/r4ds/bookclub-shinyui).
 
-- Presentations will be recorded, and will be available on the [Data Science Learning Community YouTube Channel](https://www.youtube.com/playlist?list=PL3x6DOfs2NGhoKz3RSvwGxJYoCvE4MbnM).
+- Presentations will be recorded, and will be available on the [Data Science Learning Community YouTube Channel](https://dslc.io/youtube).
 
 
 ## Pace {-}
