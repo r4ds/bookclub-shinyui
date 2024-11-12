@@ -2,140 +2,166 @@
 
 **Learning objectives:**
 
-- Basic introduction to web apps and shiny
-- Purpose of HTML, CSS, JavaScript
-- How to create HTML in R
-- How to add HTML, CSS, JavaScript to a shiny app
+-   Basic introduction to web apps and shiny
+-   Purpose of HTML, CSS, JavaScript
+-   How to create HTML in R
+-   How to add HTML, CSS, JavaScript to a shiny app
 
-## Preamble
-
-Example code for the book can be found on [GitHub](https://github.com/DivadNojnarg/OSUICode/)
-
-To install the book-associated package
-
-```r
-remotes::install_github("DivadNojnarg/OSUICode")
-library("OSUICode")
-```
-
-Prerequisites:
-
-- Essential
-  - Experience with shiny
-
-- Nonessential
-  - basic knoweledge of web technology (HTML, CSS, JS)
-
-Scope:
-
-- professional look and feel
-- develop input widgets
-- handle JS and CSS
-- mobile-friendly
-- integrate react
-
-Part 1 of the book:
-
-- Links between shiny and classic web technology (CSS, HTML, JS)
-- Explore the web dependencies in shiny (jQuery, Bootstrap)
-- Use {htmltools} to create / manipulate HTML and manage web dependencies
-
-## Introduction
+## Introduction {.unnumbered}
 
 The data scientist route to web apps:
 
-- Learn R ==> use {shiny} ==> make interactive web apps
+-   Learn R/Python ==\> use `{shiny}` ==\> make an apps in **minutes**
 
 The typical route
 
-- Learn HTML ==> learn CSS ==> learn JS ==> learn frontend/backend libraries
+-   Learn HTML ==\> learn CSS ==\> learn JS ==\> learn frontend/backend libraries
 
-- Make web apps at each stage
+-   Make web apps at each stage
 
-```{r}
-library("shiny")
-```
-
-## Shiny generates HTML code
+## Shiny generates HTML code {.unnumbered}
 
 ```{r hello_element, results="asis"}
-# We use `message` just to help display the raw HTML that is produced
-message(
-  h1("Hello world")
-)
+shiny::h1("Hello world") |> message()
 ```
 
-We just made HTML from R
+-   We just made HTML from R.
 
-We can use other web tools to customise shiny apps
+-   Being able to generate HTML code from R allows the developer to **remain focused** on the main task.
 
-- custom HTML (for content)
-- custom CSS (for styling)
-- custom JavaScript (for interactivitiy)
-- ... and make use of many templates and packages that are already written
+Shiny apps can be deeply **customized** with
 
-## Be a DJ
+-   Custom HTML (for content)
+-   Custom CSS (for styling)
+-   Custom JavaScript (for interactivitiy)
+-   ... and make use of many templates and packages that are already written
 
-Here is [36 lines of shiny code](
-  https://github.com/DivadNojnarg/OSUICode/blob/master/inst/intro/dj-system/app.R
-) (plus a few images and styles etc).
+## Be a DJ {.unnumbered}
 
-```r
-# Not rendered in the book
+Here is [36 lines of shiny code](https://github.com/DivadNojnarg/OSUICode/blob/master/inst/intro/dj-system/app.R) (plus a few images and styles etc).
 
+``` r
 remotes::install_github("Athospd/wavesurfer")
 OSUICode::run_example("intro/dj-system", package = "OSUICode")
 ```
 
-## HTML basics
+<p style="text-align:center;">
+![](image/01-shiny-and-the-web/01-dj-app.png){width="50%"}
+</p>
 
-Resources:
+## HTML tags basic types {.unnumbered}
 
-- MDN ["Introduction to HTML"](https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML)
+HTML = "HyperText Markup Language"
 
-HTML
+-   **Paired**
 
-- "Hypertext Markup Language"
-- content for a web page
-- ... and context for that content
+```         
+<!-- paired-tags -->
+<p>A paragraph</p>
+<div></div>
+```
 
-Tags:
+-   **Self-closing**
 
-- Paired tags `<p>A paragraph</p>`
-- Self-closing tags `<img src="url-for-the-picture.jpg" alt="description of the picture"/>`
-- Purpose: structure, control and formatting
+```         
+<img src="url-for-the-picture.jpg" alt="description of the picture"/>
+<iframe/>
+<input/>
+<br/>
+```
 
-The "Box Model"
+## HTML tags role types {.unnumbered}
 
-- defines the margins and dimensions of each element
+-   **Structure** tags to constitute the skeleton of the HTML page
 
-"Flow layout":
+``` html
+<head></head>
+<title></title>
+<body></body>
+```
 
-- Block elements = full-width
-- Inline elements = same line
-- Inline-block = Inline element within which you can add block elements
+-   **Control** tags to include external resources, provide interactivity with the user.
+    -   script
+    -   inputs
+    -   buttons
+-   **Formatting** tags to change wrapped text properties like its *size* and *font*.
 
-"Semantic meaning"
+``` html
+<b></b>
+<i></i>
+```
 
-- `<header>Content for the header element</header>`
+## Box Model {.unnumbered}
 
-## Tag attributes
+All elements displayed are contained by a box with properties like:
+
+-   Padding: Internal margins.
+-   Margins: Space between multiple elements.
+-   Width
+-   Height
+
+<p style="text-align:center;">
+
+![](image/01-shiny-and-the-web/03-box-model.png){width="65%"}
+
+</p>
+
+## Flow Layout {.unnumbered}
+
+Defines how the elements are displayed.
+
+| **Block elements**                                                        | **Inline elements**                                                                                 |
+|:-----------------------------------|:-----------------------------------|
+| \- Take the full width <br> - May contain other tags <br> - `<div></div>` | \- Are printed on the same line <br> - Can not contain block tags <br> - `<span></span>`, `<a></a>` |
+
+<p style="text-align:center;">
+
+![](image/01-shiny-and-the-web/02-normal-flow-layout.png){width="80%"}
+
+</p>
+
+> **Inline-block** can contain block tags in an inline.
+
+## Semantic tags {.unnumbered}
+
+They allow developers to **structure the HTML page**.
+
+``` html
+<header></header>
+<footer></footer>
+
+# In a basic HTML document, it will not automatically create a sidebar.
+<aside></aside>
+```
+
+<p style="text-align:center;">
+
+![](image/01-shiny-and-the-web/04-html-semantic-tags.png){width="80%"}
+
+</p>
+
+## Tag attributes {.unnumbered}
 
 Add properties to your HTML elements!
 
-- `id` = must be unique
-- `class` = may be shared by multiple elements
+-   **id**: Must be unique
+-   **class**: May be shared by multiple elements
 
-```html
+``` html
 <div class="awesome-item" id="this-item"></div>
 <span class="awesome-item"></span>
 ```
 
-## The simplest HTML skeleton
+> Both attributes are widely used by **CSS** and **JavaScript** to apply a **custom style** to a web page.
 
-"Hello, World!" in HTML:
+## The simplest HTML skeleton {.unnumbered}
 
-```html
+-   `<html>` is the main wrapper
+-   `<head>` and `<body>` are the two main children
+    -   `<head>` contains dependencies like styles and JavaScript files
+    -   `<body>` contains the page content and it is displayed on the screen.
+
+``` html
 <!DOCTYPE HTML>
 <html lang="en">
   <head>
@@ -148,78 +174,157 @@ Add properties to your HTML elements!
 </html>
 ```
 
-We made an HTML element using shiny above.
-Now let's make a whole web page:
+::: {style="border: 1px solid black;height: 100px"}
+<p>Hello World</p>
+:::
 
-```r
-# Not ran
+## The simplest Shiny skeleton {.unnumbered}
+
+``` r
 ui <- fluidPage(p("Hello, World!"))
 server <- function(input, output, session) {}
 
 shinyApp(ui, server)
 ```
 
-Run this app.
-Then inspect the source.
+::: {style="border: 1px solid black;height: 100px"}
+<p>Hello World</p>
+:::
 
-## The DOM
+## Document Object Model (DOM) {-}
 
-Document Object Model:
+- Convenient representation of the HTML document
+- Can be viewed by opening the HTML inspector
+- For selected elements we can also see the associated style (CSS) and Event Listeners (JavaScript)
 
-- Computational representation of an app
-- Use browser devtools to access it
-- [MDN "Manipulating documents"](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Manipulating_documents)
+<p style="text-align:center;">
+![](image/01-shiny-and-the-web/05-dom.png){width="80%"}
+</p>
 
-### Visualising the DOM
+## Web Inspector 101 {-}
 
 Open the "Hello, World!" app in the browser and click "Inspect"
 
 The inspector allows:
 
-- Dynamic changes to CSS
-- Debugging JS
-- Run JS from a console
-- Modify warnings / errors
-- Switch devices (e.g., mimic mobile)
-- Do performance audit
+-   Dynamic changes to CSS
+-   Debugging JS
+-   Run JS from a console
+-   Monitor warnings / errors
+-   Switch devices (e.g., mimic mobile)
+-   Do performance audit (Google LightHouse)
 
 Exercise:
 
-- Open "Hello, World!"
-- Open the inspector
-- Edit the paragraph text
-- Add children to paragraph tag
+-   Open "Hello, World!"
+-   Open the inspector
+-   Edit the paragraph text
+-   Add children to paragraph tag
 
-## CSS and JavaScript
+## First Website {-}
 
-1991 - The [first website](http://info.cern.ch/hypertext/WWW/TheProject.html)
+- First website in August 1991
+    - Not Cascading Style Sheets (CSS), introduced in December 1996
 
-1995 - JavaScript = Interactivity
+<p style="text-align:center;">
+![](image/01-shiny-and-the-web/06-www-first.png)
+</p>
 
-1996 - CSS = Styling
+## CSS Introduction {-}
 
-### HTML and CSS
+CSS allows you to **deeply customize** the appearance of any web page.
 
-CSS specifies how collections of elements should be displayed
-Elements are picked by class, id, or other properties.
+<p style="text-align:center;">
+![](image/01-shiny-and-the-web/07-www-rinterface.png){width="80%"}
+</p>
 
-In shiny, we can add CSS for styling in a few ways:
+
+## HTML and CSS {-}
+
+CSS changes the **style** of HTML tags by targeting specific **tags**, **classes** or **ids**. 
+
+if we want all p tags to have red color.
+
+```html
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <style type="text/css">
+      p {
+        color: red;
+      }
+    </style>
+    <title>A title</title>
+  </head>
+  <body>
+    <p>Hello World</p>
+  </body>
+</html>
+```
+
+::: {style="border: 1px solid black;height: 100px"}
+<p style="color:red;">Hello World</p>
+:::
+
+## HTML and CSS in Shiny {-}
 
 ```r
 ui <- fluidPage(
-  tags$style("p {color: red;}"),
-  p("Hello, World!")
+  tags$style("p { color: red;}"),
+  p("Hello World")
 )
+
 server <- function(input, output, session) {}
+
 shinyApp(ui, server)
 ```
 
-### HTML and JavaScript
+::: {style="border: 1px solid black;height: 100px"}
+<p style="color:red;">Hello World</p>
+:::
 
-With JS, we can respond to user clicks (amongst many other things):
+
+## HTML and JavaScript {-}
+
+**JavaScript**
+    - Introduced in 1995
+    - Object-oriented programming (OOP)
+    - Allows interaction with the HTML elements
+
+In the next example the text change to green after clicking the text.
+
+```html
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <style type="text/css">
+      p {
+        color: red;
+      }
+    </style>
+    <script language="javascript">
+      // displays an alert 
+      alert('Click on the Hello World text!');
+      // change text color
+      function changeColor(color){
+        document.getElementById('hello').style.color = color;
+      }
+    </script>
+    <title>A title</title>
+  </head>
+  <body>
+    <!-- onclick attributes applies the JavaScript 
+    function changeColor define above -->
+    <p id="hello" onclick="changeColor('green')">Hello World</p>
+  </body>
+</html>
+```
+
+## HTML and JavaScript in Shiny {-}
 
 ```r
 ui <- fluidPage(
+  tags$style("p { color: red;}"),
   tags$script(
     "alert('Click on the Hello World text!');
      // change text color
@@ -236,9 +341,10 @@ server <- function(input, output, session) {}
 shinyApp(ui, server)
 ```
 
-## Summary
+## Summary {-}
 
-Shiny builds interactive web apps from R.
+Shiny builds interactive web apps from R. 
+
 You can add custom CSS, JS and HTML to your shiny apps.
 
 ## Meeting Videos
@@ -248,24 +354,26 @@ You can add custom CSS, JS and HTML to your shiny apps.
 `r knitr::include_url("https://www.youtube.com/embed/eabiEX8MNmQ")`
 
 <details>
-<summary> Meeting chat log </summary>
 
+<summary>Meeting chat log</summary>
+
+```         
+00:04:28    Arthur Shaw: @russ, you audio may not be hooked up yet
+00:04:45    Arthur Shaw: In Zoom, we can see "Connecting to audio" under your video
+00:05:09    Arthur Shaw: You may have a poor physical connection. Lots of static
+00:05:27    Arthur Shaw: Same issue
+00:17:47    Trevin: I'm also in the Mastering Shiny book club with Lucio 🙂
+00:20:09    Federica Gazzelloni: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide
+00:20:57    Lucio Cornejo: This book seems more robust in the frontdns side. JavaScript for R felt mostly R like
+00:21:02    Lucio Cornejo: frontend*
+00:38:53    Jack Penzer: When writing custom html, the inputId in a shiny function is defined as id = in the html?
+00:39:46    Lucio Cornejo: yes, it mainly copies the usual html attributes.
+00:40:36    Lucio Cornejo: so something like "class = 'some-name'" also work as an argument
+00:51:44    Jack Penzer: 👍
+01:02:46    Lucio Cornejo: I'll be doing chapter 2
+01:03:45    Trevin: Thanks for starting us off Russ!
+01:03:53    Lucio Cornejo: No questions from me. Thank you Russ
+01:04:12    Jack Penzer: Away skiing next week but will be back the following week!
 ```
-00:04:28	Arthur Shaw: @russ, you audio may not be hooked up yet
-00:04:45	Arthur Shaw: In Zoom, we can see "Connecting to audio" under your video
-00:05:09	Arthur Shaw: You may have a poor physical connection. Lots of static
-00:05:27	Arthur Shaw: Same issue
-00:17:47	Trevin: I'm also in the Mastering Shiny book club with Lucio 🙂
-00:20:09	Federica Gazzelloni: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide
-00:20:57	Lucio Cornejo: This book seems more robust in the frontdns side. JavaScript for R felt mostly R like
-00:21:02	Lucio Cornejo: frontend*
-00:38:53	Jack Penzer: When writing custom html, the inputId in a shiny function is defined as id = in the html?
-00:39:46	Lucio Cornejo: yes, it mainly copies the usual html attributes.
-00:40:36	Lucio Cornejo: so something like "class = 'some-name'" also work as an argument
-00:51:44	Jack Penzer: 👍
-01:02:46	Lucio Cornejo: I'll be doing chapter 2
-01:03:45	Trevin: Thanks for starting us off Russ!
-01:03:53	Lucio Cornejo: No questions from me. Thank you Russ
-01:04:12	Jack Penzer: Away skiing next week but will be back the following week!
-```
+
 </details>
