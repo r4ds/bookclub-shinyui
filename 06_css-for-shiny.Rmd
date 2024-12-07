@@ -50,7 +50,7 @@ the examples in this subchapter.
 - Aditionally, another page showcasing common CSS properties
 can be found in the repo folder `examples/chapter-06/common-css`
 
-### Basic
+## Basic
 
 - CSS declaration structure:
     
@@ -103,7 +103,7 @@ can be found in the repo folder `examples/chapter-06/common-css`
     }
     ```
 
-### Intermediate
+## Intermediate
 
 Now, we introduce selectors corresponding
 to the *state*, *part* or *attribute*
@@ -182,7 +182,7 @@ em[contenteditable="true"] {
 }
 ```
 
-### Advanced 
+## Advanced 
 
 ### Nesting {-}
 
@@ -239,7 +239,7 @@ table:has(td:hover) td:not(:hover) {
 }
 ```
 
-### Animations {-}
+## Animations {-}
 
 - CSS keyframe syntax:
 
