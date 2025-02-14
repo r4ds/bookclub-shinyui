@@ -202,9 +202,195 @@ To initiate a websocket connection:
 
 ![](image/11-r-js-communicate/04-http-upgrade-to-ws.png)
 
-## JS to R websocket {-}
+## Create the app {-}
+
+To start the server, we leverage the `startServer()` function that expects:
+
+  - A __host__, usually `127.0.0.1` if you work locally or `0.0.0.0` if you work from docker. 
+  - A __port__, like `8080` (app may be accessed on `<HOST>:<PORT>` in your web browser).
+  - A list of functions describing the __app__, particularly:
+  
+    - `call` expects the HTTP response.
+    - `onWSOpen` expects the websocket server.
 
 
+## call: HTTP response {-}
+
+The HTTP response is returned by the `call` function and is typically defined as follows:
+
+  - A __status__ code, 200 being the OK HTTP [status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status).
+  - Some __headers__ indicating the content nature.
+  - The __body__, which is what will be displayed upon client request. 
+
+```{r, eval=FALSE}
+http_response <- function(req) {
+  list(
+    status = 200L,
+    headers = list(
+      'Content-Type' = 'text/html'
+    ),
+    body = "Hello world!"
+  )
+}
+```
+
+
+## onWSOpen: websocket server {-}
+
+```{r}
+#| eval: false
+
+onWSOpen = function(ws) {
+
+  # The ws object is a WebSocket object
+  cat("New connection opened.\n")
+
+  # Capture client messages
+  ws$onMessage(function(binary, message) {
+
+    # Save the Response
+    input_message <- jsonlite::fromJSON(message)
+    print(input_message)
+    cat("Number of bins:", input_message$value, "\n")
+ 
+    # Create a plot in the server
+    hist(rnorm(input_message$value))
+    if (!is.null(delay)) Sys.sleep(delay)
+
+    # Create a message to update gauge widget in client side
+    output_message <- jsonlite::toJSON(
+      list(
+        val = sample(0:100, 1),
+        message = "Thanks client! I updated the plot..."
+      ),
+      pretty = TRUE,
+      auto_unbox = TRUE
+    )
+
+    # Sent a message
+    ws$send(output_message)
+    cat(output_message)
+  })
+
+  # Confirm that the server have been closed
+  ws$onClose(function() {
+    cat("Server connection closed.\n")
+  })
+}
+```
+
+
+## App example {-}
+
+```{r}
+#| eval: false
+
+httpuv_app <- function(host = "127.0.0.1", delay = NULL) {
+  s <- httpuv::startServer(
+    host,
+    8080,
+    list(
+      call = function(req) {
+        list(
+          status = 200L,
+          headers = list(
+            'Content-Type' = 'text/html'
+          ),
+          body = sprintf('
+            <!DOCTYPE HTML>
+            <html lang="en">
+              <head>
+                <script language="javascript">
+                  document.addEventListener("DOMContentLoaded", function(event) {
+
+                    var gauge = document.getElementById("mygauge");
+
+                    // Initialize client socket connection
+                    var mySocket = new WebSocket("ws://%s:8080");
+
+                    mySocket.onopen = function (event) {
+                      // do stuff
+                    };
+
+                    // update the gauge value on server message
+                    mySocket.onmessage = function (event) {
+                      var data = JSON.parse(event.data);
+                      gauge.value = data.val;
+                    };
+
+                    // update the value number
+                    var sliderWidget = document.getElementById("slider");
+                    var label = document.getElementById("sliderLabel");
+                    label.innerHTML = "Value:" + slider.value; // init
+
+                    // on change
+                    sliderWidget.oninput = function() {
+                      var val = parseInt(this.value);
+                      mySocket.send(
+                        JSON.stringify({
+                          value: val,
+                          message: "New value for you server!"
+                        })
+                      );
+                      label.innerHTML = "Value:" + val;
+                    };
+                  });
+                </script>
+                <title>Websocket Example</title>
+              </head>
+              <body>
+                <div>
+                  <input type="range" id="slider" name="volume" min="0" max="100">
+                  <label for="slider" id ="sliderLabel"></label>
+                </div>
+                <br/>
+                <label for="mygauge">Gauge:</label>
+                <meter id="mygauge" min="0" max="100" low="33" high="66" optimum="80" value="50"></meter>
+              </body>
+            </html>
+          ', host)
+        )
+      },
+      onWSOpen = function(ws) {
+        # The ws object is a WebSocket object
+        cat("New connection opened.\n")
+
+        # Capture client messages
+        ws$onMessage(function(binary, message) {
+
+          # create plot
+          input_message <- jsonlite::fromJSON(message)
+          print(input_message)
+          cat("Number of bins:", input_message$value, "\n")
+          hist(rnorm(input_message$value))
+          if (!is.null(delay)) Sys.sleep(delay)
+
+          # update gauge widget
+          output_message <- jsonlite::toJSON(
+            list(
+              val = sample(0:100, 1),
+              message = "Thanks client! I updated the plot..."
+            ),
+            pretty = TRUE,
+            auto_unbox = TRUE
+          )
+          ws$send(output_message)
+          cat(output_message)
+        })
+        ws$onClose(function() {
+          cat("Server connection closed.\n")
+        })
+      }
+    )
+  )
+  s
+}
+
+# I need to the host to have access to the port using docker
+app <- httpuv_app("0.0.0.0")
+
+app
+```
 
 
 ## Meeting Videos {-}
