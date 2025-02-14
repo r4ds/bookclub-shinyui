@@ -12,3 +12,7 @@ libs
 _book/*.html
 app.R
 app2.R
+
+renv/
+renv.lock
+.Rprofile

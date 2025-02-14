@@ -15,8 +15,11 @@ Imports:
     bookdown,
     bs4Dash,
     DiagrammeR,
+    httpuv,
+    jsonlite,
     purrr,
     rmarkdown,
     shiny,
     shinydashboard,
-    shinydashboardPlus
+    shinydashboardPlus,
+    websocket

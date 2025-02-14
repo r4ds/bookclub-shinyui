@@ -1,15 +1,213 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
 # Communicate between R and JS
 
 **Learning objectives:**
 
-- THESE ARE NICE TO HAVE BUT NOT ABSOLUTELY NECESSARY
+- Explain the main mechanisms behind a Shiny app responsible for driving the __R/JavaScript communication__.
 
-## SLIDE 1
+- This is crucial if you aim at developing your very own __Shiny input widgets__.
 
-- ADD SLIDES AS SECTIONS (`##`).
-- TRY TO KEEP THEM RELATIVELY SLIDE-LIKE; THESE ARE NOTES, NOT THE BOOK ITSELF.
+<br>
 
-## Meeting Videos
+**HTTP Limitation**
+
+- The __connection is closed__ after each request.
+- We need a __permanent connection__, allowing bidirectional fluxes between __R__ and __JS__
+
+## Introductory example {-}
+
+The Shiny app:
+
+- `actionButton()` _(**sends a message** from the client (JS) to the server (R))_
+
+    - Triggers an `observeEvent()` _(**processes message** and updates the R server)_
+        - Fires `updateSlideInput()`_(**sends a message back** to the client containing the id of the input to update)_
+
+
+- `sliderInput()` 
+
+    - _(JS **receives the message** and updates the corresponding input element)_
+    - _(JS **sends the new input value** to the server)_
+
+![](image/11-r-js-communicate/01-websocket-intro.png){width=80%}
+
+## How R and JS communicate? {-}
+
+**JSON** stands for JavaScript Object Notation. 
+
+- It has the same structure as a **JS object**.
+
+- It can be serialized as a character string.
+
+```json
+{
+  "name": "David",
+  "color": "purple",
+  "planet": "Mars",
+  "animals": [
+    {
+      "name": "Euclide",
+      "type": "cat",
+      "age": 7
+    }
+  ]
+}
+```
+
+```{r}
+#| echo: false
+
+my_json <- '
+{
+  "name": "David",
+  "color": "purple",
+  "planet": "Mars",
+  "animals": [
+    {
+      "name": "Euclide",
+      "type": "cat",
+      "age": 7
+    }
+  ]
+}
+'
+```
+
+
+## Read JSON in R {-}
+
+Read data from a JSON and convert it to the appropriate R structure.
+
+```{r}
+library(jsonlite)
+res <- fromJSON(my_json)
+str(res)
+```
+
+
+## Read JSON in R {-}
+
+If you don't want to get a data.frame we can run.
+
+```{r}
+fromJSON(my_json, simplifyVector = FALSE)
+```
+
+## Export JSON from R {-}
+
+```{r}
+my_list <- list(
+  name = "David",
+  color = "purple",
+  planet = "Mars"
+)
+
+toJSON(my_list)
+```
+
+
+## Export JSON from R {-}
+
+If you want to have have different view:
+
+- `auto_unbox`: automatically unbox() all atomic vectors of length 1.
+- `pretty`: adds indentation whitespace to JSON output. 
+
+```{r}
+my_list <- list(
+  id = "01522",
+  name = "David",
+  organization = list(
+    id = "AWER12",
+    name = "RinteRface",
+    site = "Switzerland"
+  )
+)
+
+toJSON(my_list, auto_unbox = TRUE, pretty = TRUE)
+```
+
+## Read and Export JSON in JS {-}
+
+Read JSON
+
+```javascript
+JSON.parse(my_json)
+```
+
+Export JSON
+
+```javascript
+myObject = {
+  "name": "David",
+  "color": "purple",
+  "planet": "Mars",
+}
+JSON.stringify(my_object)
+```
+
+## What is a websocket? {-}
+
+> It is a computer **communications protocol**, providing a simultaneous two-way communication channel over a single Transmission Control Protocol (TCP) connection.
+
+<br>
+
+<p align="center">
+![](image/11-r-js-communicate/02-Websocket_connection.png)
+<p>
+
+## Creating a server {-}
+
+`httpuv::startServer:` Creates an HTTP/WebSocket server on the specified host and port.
+
+```{r}
+#| file: examples/chapter-11/01-server-example.R
+```
+
+
+## Creating a client {-}
+
+```{r}
+#| eval: false
+
+# set the client
+ws <- websocket::WebSocket$new("ws://127.0.0.1:8080/")
+
+ws$onMessage(function(event) {
+  cat("Client received message:", event$data, "\n")
+})
+
+# Wait for a moment before running next line
+ws$send("Hello server!")
+
+# Close client
+ws$close()
+```
+
+## Websocket diagram {-}
+
+![](image/11-r-js-communicate/03-websocket-basics.png)
+
+
+## Starting connection {-}
+
+To initiate a websocket connection:
+
+- The client sends an HTTP request to the server _(known as **handshake**)_
+- If the server accepts, the returned HTTP code is 101, meaning that we __switch protocole from HTTP to WS__ or WSS
+
+![](image/11-r-js-communicate/04-http-upgrade-to-ws.png)
+
+## JS to R websocket {-}
+
+
+
+
+## Meeting Videos {-}
 
 ### Cohort 1
 
