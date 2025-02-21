@@ -2,12 +2,296 @@
 
 **Learning objectives:**
 
-- THESE ARE NICE TO HAVE BUT NOT ABSOLUTELY NECESSARY
+- Understand how Shiny inputs work
+- Understand how to create new Shiny inputs.
 
-## SLIDE 1
+## Input bindings {-}
 
-- ADD SLIDES AS SECTIONS (`##`).
-- TRY TO KEEP THEM RELATIVELY SLIDE-LIKE; THESE ARE NOTES, NOT THE BOOK ITSELF.
+- Upon initialization, Shiny runs several **JavaScript functions**.
+- Some of those functions are **exposed through the Shiny JS object**.
+
+Let's see an example:
+
+1. Run the below app.
+
+```{r}
+#| eval: false
+
+OSUICode::run_example(
+ "input-system/dummy-app",
+  package = "OSUICode"
+)
+```
+
+2. Open the HTML inspector and the console you run `Shiny.unbindAll(document);`
+
+3. The plot will stop changing regardless how much you the slicer.
+
+4. Run `Shiny.bindAll(document);` to take the app back to normality.
+
+
+## Adding JS to UI {-}
+
+As `onclick` is a valid HTML attribute for the &lt;button&gt; tag, we can use it within Shiny's actionButton to __execute arbitrary JavaScript code__ when the button is clicked.
+
+
+> `onclick` is supported for __all HTML elements__, EXCEPT: &lt;base&gt;, &lt;bdo&gt;, &lt;br&gt;, &lt;head&gt;, &lt;html&gt;, &lt;iframe&gt;, &lt;meta&gt;, &lt;param&gt;, &lt;script&gt;, &lt;style&gt;, and &lt;title&gt;
+
+
+
+```{r}
+#| eval: false
+
+library(shiny)
+
+ui <- fluidPage(
+  actionButton(
+    "unbind",
+    "Unbind inputs",
+    onclick = "Shiny.unbindAll();"
+  ),
+  actionButton(
+    "bind",
+    "Bind inputs",
+    onclick = "Shiny.bindAll(document);"
+  ),
+  lapply(1:3, function(i) {
+    textInput(paste0("text_", i), paste("Text", i))
+  }),
+  lapply(1:3, function(i) {
+    uiOutput(paste0("val_", i))
+  })
+)
+
+server <- function(input, output, session) {
+  lapply(1:3, function(i) {
+    output[[paste0("val_", i)]] <- renderPrint({
+      input[[paste0("text_", i)]]
+    })
+  })
+}
+
+shinyApp(ui, server)
+```
+
+## Input structure {-}
+
+- **id** guarantees the input uniqueness
+
+- **type** defines how the element is displayed in several ways.
+
+| Type | Type | Type | Type | Type |
+|------|------|------|------|------|
+| button | checkbox | color | date | datetime-local |
+| email | file | hidden | image | month |
+| number | password | radio | range | reset |
+| search | submit | tel | text | time |
+| url | week | | | |
+
+- **class** may be required to find the element in the DOM. 
+
+- **value** holds the input value.
+
+```html
+<input id = "id" type = "text" class = "..." value = value>
+```
+
+## Binding Shiny inputs {-}
+
+The `InputBinding` methods are the set of instructions **you need to provide to Shiny** so it understands **how to interact with your custom HTML** input component by defining:
+
+1.  **How to find** your input elements in the HTML.
+2.  **How to get a unique ID** for each input instance.
+3.  **What type of data** it represents.
+4.  **How to extract the value** from your custom input.
+5.  **How to detect when the value changes** and notify Shiny.
+6.  **How to update your input** from the server.
+7.  **How to manage communication frequency** for efficiency.
+8.  **How to set up and clean up** your input element's resources.
+
+> It relies on a class defined in the [`input_binding.js`](https://github.com/rstudio/shiny/blob/60db1e02b03d8e6fb146c9bb1bbfbce269231add/srcjs/input_binding.js)
+
+## Binding Shiny inputs {-}
+
+| Method Name           | Utility for Custom Inputs                                 | Description                                                                                                                                                                                                                                          |
+|-----------------------|-----------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `find(scope)`         | **Element discovery**                                     | Defines how Shiny.js locates HTML elements within a given scope (e.g., a div) to treat as instances of your custom input. This method must be implemented for proper element selection.                                                         |
+| `getId(el)`           | **Unique ID extraction**                                  | Retrieves a unique identifier for the input element—using `data-input-id` or the element’s `id`—to correctly link the client-side input with the corresponding Shiny server object.                                                           |
+| `getType()`           | **Data type specification**                               | Returns the type of the input (e.g., "numeric", "character") so that the server can properly deserialize JSON data. If not specified, it defaults to a general type.                                                                           |
+
+## Binding Shiny inputs {-}
+
+| Method Name           | Utility for Custom Inputs                                 | Description                                                                                                                                                                                                                                          |
+|-----------------------|-----------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `getValue(el)`        | **Value extraction**                                      | Core method for extracting the current value from the input element. It must be implemented to read the appropriate property or attribute reflecting the user’s input.                                                                          |
+| `subscribe(el, callback)` | **Reactivity and event handling**                     | Sets up event listeners (e.g., on 'change', 'keyup', or 'click') so that any input change triggers the provided callback. This keeps Shiny aware of real-time changes in your custom component.                                                |
+| `unsubscribe(el)`     | **Resource cleanup**                                      | Removes event listeners attached in `subscribe`, ensuring efficient resource management and preventing memory leaks when the input is removed from the DOM.                                                                                         |
+
+
+## Binding Shiny inputs {-}
+
+| Method Name           | Utility for Custom Inputs                                 | Description                                                                                                                                                                                                                                          |
+|-----------------------|-----------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `receiveMessage(el, data)` | **Server-controlled updates**                        | Allows the Shiny server to update the input element by sending new data (like value, min, or max) and triggers a change event. This method must be implemented to support dynamic updates from R.                                             |
+| `getState(el)`        | **Comprehensive state capture**                           | Captures the complete state of the input (beyond just its value), which is useful for complex inputs with multiple properties. This state can then be communicated back to the server for restoration or analysis.                             |
+| `getRatePolicy()`     | **Efficient server communication**                        | Specifies the rate at which input updates are sent to the server (using strategies like debounce or throttle). Defaults to `null` if not defined, but can be customized to optimize performance during rapid input changes.                     |
+
+
+## Binding Shiny inputs {-}
+
+| Method Name           | Utility for Custom Inputs                                 | Description                                                                                                                                                                                                                                          |
+|-----------------------|-----------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `initialize(el)`      | **Initial setup**                                         | Invoked when the input element is first rendered or dynamically added, allowing for any required pre-binding initialization—such as configuring JavaScript widgets or setting initial states.                                                     |
+| `dispose(el)`         | **Teardown and cleanup**                                  | Called when an input element is removed, this method cleans up event listeners and any other resources to prevent memory leaks and maintain application efficiency.                                                                                |
+
+
+## Find the input {-}
+
+1. Define an input (in the UI), with a specific attribute (**type** or **class**) that will serve as a receptor for the binding.
+
+2. Define the **find** method to identify this receptor in the `scope` argument (the document). It accepts any jQuery selector.
+
+> If your app contains 10 sliders, they all share **the same input binding**.
+
+```javascript
+find: function(scope) {
+  return $(scope).find('.input-text');
+}
+```
+
+## Find the input {-}
+
+![](image/12-understand-shiny-inputs/01-shiny-find-inputs.png)
+
+## Re-create textInput {-}
+
+1. Create an UI function with the new class `input-text` as the original `textInput()` use the binding based on input type.
+2. Add the JS dependency with the find method.
+
+```{r}
+#| eval: false
+
+customTextInput <- function (
+  inputId, 
+  label, 
+  value = "", 
+  width = NULL, 
+  placeholder = NULL,
+  binding_step
+) {
+  
+  # this external wrapper ensure to control the input width
+  div(
+    class = "form-group shiny-input-container", 
+    style = if (!is.null(width)) {
+      paste0("width: ", validateCssUnit(width), ";")
+    },
+    # input label
+    shinyInputLabel(inputId, label), 
+    
+    # input element + JS dependencies
+    tagList(
+      customTextInputDeps(binding_step),
+      tags$input(
+        id = inputId,
+        type = "text",
+        class = "form-control input-text",
+        value = value,
+        placeholder = placeholder
+      )
+    )
+  )
+}
+```
+
+## Re-create textInput {-}
+
+1. Create an UI function with the new class `input-text` as the original `textInput()` use the binding based on input type.
+2. Add the JS dependency with the find method.
+
+```{r}
+#| eval: false
+
+customTextInputDeps <- function(binding_step) {
+  htmlDependency(
+    name = "customTextBindings",
+    version = "1.0.0",
+    src = c(file = system.file(
+      "input-system/input-bindings", 
+      package = "OSUICode"
+    )),
+    script = paste0(
+      "customTextInputBinding_", 
+      binding_step, 
+      ".js"
+    )
+  )
+}
+```
+
+## Re-create textInput {-}
+
+If go check the book package we can see the created method [here](https://github.com/DivadNojnarg/OSUICode/blob/master/inst/input-system/input-bindings/customTextInputBinding_1.js).
+
+```javascript
+$(function() {
+  // Input binding
+  let customTextBinding = new Shiny.InputBinding();
+
+  $.extend(customTextBinding, {
+    find: function(scope) {
+      console.log($(scope).find('.input-text'));
+      return $(scope).find('.input-text');
+    }
+  });
+
+  Shiny.inputBindings.register(customTextBinding, 'text');
+});
+```
+
+## Re-create textInput {-}
+
+Now we can wrap the input in simple app to see if the method is working in the inspector console.
+
+```{r}
+#| eval: false
+
+library(shiny)
+library(OSUICode)
+
+customTextInputExample <- function(binding_step) {
+  ui <- fluidPage(
+    customTextInput(
+      inputId = "caption",
+      label = "Caption",
+      value = "Data Summary",
+      binding_step = binding_step
+    ),
+    textOutput("custom_text")
+  )
+  server <- function(input, output) {
+    output$custom_text <- renderText(input$caption)
+  }
+  shinyApp(ui, server)
+}
+
+customTextInputExample(1)
+```
+
+
+## Debbuging JS methods {-}
+
+1. Run the app.
+2. Open the developer tools
+3. On the sources tab, look for the `customTextInputBinding.js` script 
+4. Put a breakpoints in the `find` method 
+5. Reload the page
+6. Type the console `$(scope).find('.input-text')` to display the DOM element
+
+> If hover over the JavaScript output, the element will be highlighted.
+
+![](image/12-understand-shiny-inputs/02-binding-find.png)
+
 
 ## Meeting Videos
 
