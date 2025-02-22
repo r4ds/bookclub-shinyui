@@ -292,6 +292,100 @@ customTextInputExample(1)
 
 ![](image/12-understand-shiny-inputs/02-binding-find.png)
 
+## Initialize inputs {-}
+
+Upon initialization:
+
+1. Shiny calls the `initializeInputs` function.
+2. It takes **all input bindings** and **calls their initialize method** _**before binding all inputs**_.
+
+The `initialize` method is **not always defined**
+
+An exception is the Framework7 (used but `{shinyMobile}`) requires **instantiating all elements**.
+
+```javascript
+let f7ToggleBinding = new Shiny.InputBinding();
+  $.extend(f7ToggleBinding, {
+    initialize: function(el) {
+      app.toggle.create({el: el});
+    },
+    // other methods
+});
+```
+
+Where:
+
+- `el: '.toggle'` means that we are looking at the element(s) having the `toggle` class.
+- `app.toggle.create` is internal to the Framework7 API.
+
+## Get the value {-}
+
+The **getValue** method returns the input value _(different for almost all inputs)_ 
+
+Where it is the example for the `textInput()`:
+
+```javascript
+getValue: function(el) {
+  console.log($(el));
+  return $(el).val();
+}
+```
+
+Where:
+
+- **el** refers to the element holding the id attribute and recognized by the find method.
+- **val()** is extracting the `value` attribute
+
+
+## Get the value {-}
+
+If we applying this binding the can see that the app is now showing the output, but if try to update the input the **output won't update** a second time.
+
+```{r}
+#| eval: false
+
+library(OSUICode)
+
+customTextInputExample(2)
+```
+
+![](image/12-understand-shiny-inputs/03-get-value-binding.png)
+
+## Set and update {-}
+
+To make possible to **updated** input value we need to define the **setValue** method.
+
+```javascript
+setValue: function(el, value) {
+  $(el).val(value);
+}
+```
+
+> We can use it in combination of the **receiveMessage** to creare R funcions like **updateInput** where we call the `setValue` method inside
+
+```javascript
+receiveMessage: function(el, data) {
+  console.log(data);
+  if (data.hasOwnProperty('value')) {
+    this.setValue(el, data.value);
+  }
+  // other parameters to update...
+}
+```
+
+Where:
+
+- `el` is the DOM element.
+- `value` represents the new value.
+- `data` are received from R as JS object
+
+## Set and update {-}
+
+![](image/12-understand-shiny-inputs/04-shiny-update-inputs.png)
+
+## Update function {-}
+
+
 
 ## Meeting Videos
 
