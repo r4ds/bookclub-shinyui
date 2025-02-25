@@ -351,9 +351,9 @@ customTextInputExample(2)
 
 ![](image/12-understand-shiny-inputs/03-get-value-binding.png)
 
-## Set and update {-}
+## Updating Inputs From R {-}
 
-To make possible to **update** values from inputs we need to define the **setValue** method.
+1. Define the **setValue** method.
 
 ```javascript
 setValue: function(el, value) {
@@ -361,7 +361,7 @@ setValue: function(el, value) {
 }
 ```
 
-To make possible to **update inputs** from server we need to define the **receiveMessage** method.
+2. Define the **receiveMessage** method.
 
 ```javascript
 receiveMessage: function(el, data) {
@@ -381,7 +381,7 @@ Where:
 
 >  It is good practice to add a `data.hasOwnProperty` check to **avoid running code if the specified property does not exist**.
 
-## Set and update {-}
+## Updating Inputs From R {-}
 
 ![](image/12-understand-shiny-inputs/04-shiny-update-inputs.png)
 
@@ -442,6 +442,22 @@ updateCustomTextInput <- function(
   session$sendInputMessage(inputId, message)
 }
 ```
+
+
+## updateCustomTextInput {-}
+
+```{r}
+#| eval: false
+
+library(OSUICode)
+
+updateCustomTextInputExample(3)
+```
+
+![](image/12-understand-shiny-inputs/05-update-input-text.png)
+
+
+We put breakpoints in the receiveMessage and setValue methods and reload the page. Upon reload, the JavaScript debugger opens starts in find. You may click on the next blue arrow until you reach receiveMessage
 
 
 ## Meeting Videos
