@@ -353,7 +353,7 @@ customTextInputExample(2)
 
 ## Set and update {-}
 
-To make possible to **updated** input value we need to define the **setValue** method.
+To make possible to **update** values from inputs we need to define the **setValue** method.
 
 ```javascript
 setValue: function(el, value) {
@@ -361,7 +361,7 @@ setValue: function(el, value) {
 }
 ```
 
-> We can use it in combination of the **receiveMessage** to creare R funcions like **updateInput** where we call the `setValue` method inside
+To make possible to **update inputs** from server we need to define the **receiveMessage** method.
 
 ```javascript
 receiveMessage: function(el, data) {
@@ -379,12 +379,69 @@ Where:
 - `value` represents the new value.
 - `data` are received from R as JS object
 
+>  It is good practice to add a `data.hasOwnProperty` check to **avoid running code if the specified property does not exist**.
+
 ## Set and update {-}
 
 ![](image/12-understand-shiny-inputs/04-shiny-update-inputs.png)
 
-## Update function {-}
+## Session Object (REMANDER) {-}
 
+**session** is an instance of the [ShinySession](https://github.com/rstudio/shiny/blob/60db1e02b03d8e6fb146c9bb1bbfbce269231add/R/shiny.R#L338) **R6** class:
+
+- It's **unique** to a given user
+- It contains all information about input, output and client data
+
+<br>
+
+Exposes methods:
+
+- **sendInputMessage** is used to update inputs from the server.
+- **sendCustomMessage** sends messages from R to JS. _If `shiny.trace = TRUE` the sent JSON is displayed_.
+
+
+## updateCustomTextInput {-}
+
+1. Use the `getDefaultReactiveDomain()`function to **recover the current session**.
+2. Use the **sendInputMessage** is used to update inputs from the server.
+
+```{r}
+#| eval: false
+
+updateCustomTextInput <- function(
+  inputId, 
+  value = NULL, 
+  session = getDefaultReactiveDomain()
+) {
+  session$sendInputMessage(inputId, message = value)
+}
+```
+
+## updateCustomTextInput {-}
+
+To pass multiple elements to update:
+
+1. We can use `shiny:::dropNulls` internal function to ensure that the list does not contain NULL elements.
+2. Pass the list to the **sendInputMessage**.
+
+```{r}
+#| eval: false
+
+updateCustomTextInput <- function(
+  inputId, 
+  value = NULL, 
+  placeholder = NULL, 
+  session = getDefaultReactiveDomain()
+) {
+  message <- dropNulls(
+    list(
+      value = value,
+      placeholder = placeholder
+    )
+  )
+  session$sendInputMessage(inputId, message)
+}
+```
 
 
 ## Meeting Videos
