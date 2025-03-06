@@ -144,29 +144,35 @@ The `InputBinding` methods are the set of instructions **you need to provide to 
 | `initialize(el)`      | **Initial setup**                                         | Invoked when the input element is first rendered or dynamically added, allowing for any required pre-binding initialization—such as configuring JavaScript widgets or setting initial states.                                                     |
 | `dispose(el)`         | **Teardown and cleanup**                                  | Called when an input element is removed, this method cleans up event listeners and any other resources to prevent memory leaks and maintain application efficiency.                                                                                |
 
+## Re-create textInput {-}
 
-## Find the input {-}
+1. Define where to store the binding JS methods to use.
 
-1. Define an input (in the UI), with a specific attribute (**type** or **class**) that will serve as a receptor for the binding.
+```{r}
+#| eval: false
 
-2. Define the **find** method to identify this receptor in the `scope` argument (the document). It accepts any jQuery selector.
-
-> If your app contains 10 sliders, they all share **the same input binding**.
-
-```javascript
-find: function(scope) {
-  return $(scope).find('.input-text');
+customTextInputDeps <- function(binding_step) {
+  htmlDependency(
+    name = "customTextBindings",
+    version = "1.0.0",
+    src = c(file = system.file(
+      "input-system/input-bindings", 
+      package = "OSUICode"
+    )),
+    script = paste0(
+      "customTextInputBinding_", 
+      binding_step, 
+      ".js"
+    )
+  )
 }
 ```
 
-## Find the input {-}
-
-![](image/12-understand-shiny-inputs/01-shiny-find-inputs.png)
-
 ## Re-create textInput {-}
 
-1. Create an UI function with the new class `input-text` as the original `textInput()` use the binding based on input type.
-2. Add the JS dependency with the find method.
+2. Create an UI function with the new class `input-text` and JS dependency.
+
+> The original `textInput()` use the binding based on input type.
 
 ```{r}
 #| eval: false
@@ -204,34 +210,11 @@ customTextInput <- function (
 }
 ```
 
-## Re-create textInput {-}
 
-1. Create an UI function with the new class `input-text` as the original `textInput()` use the binding based on input type.
-2. Add the JS dependency with the find method.
-
-```{r}
-#| eval: false
-
-customTextInputDeps <- function(binding_step) {
-  htmlDependency(
-    name = "customTextBindings",
-    version = "1.0.0",
-    src = c(file = system.file(
-      "input-system/input-bindings", 
-      package = "OSUICode"
-    )),
-    script = paste0(
-      "customTextInputBinding_", 
-      binding_step, 
-      ".js"
-    )
-  )
-}
-```
 
 ## Re-create textInput {-}
 
-If go check the book package we can see the created method [here](https://github.com/DivadNojnarg/OSUICode/blob/master/inst/input-system/input-bindings/customTextInputBinding_1.js).
+3. Write the JS binding methods as you can see below for the [find](https://github.com/DivadNojnarg/OSUICode/blob/master/inst/input-system/input-bindings/customTextInputBinding_1.js) method.
 
 ```javascript
 $(function() {
@@ -248,6 +231,11 @@ $(function() {
   Shiny.inputBindings.register(customTextBinding, 'text');
 });
 ```
+
+## Find the input {-}
+
+![](image/12-understand-shiny-inputs/01-shiny-find-inputs.png)
+
 
 ## Re-create textInput {-}
 
@@ -446,18 +434,81 @@ updateCustomTextInput <- function(
 
 ## updateCustomTextInput {-}
 
+Now we just new to add and observer to update the input from the server to the client.
+
 ```{r}
 #| eval: false
 
-library(OSUICode)
+OSUICode::updateCustomTextInputExample(3)
 
-updateCustomTextInputExample(3)
+updateCustomTextInputExample <- function(binding_step) {
+  ui <- fluidPage(
+    customTextInput(
+      "caption",
+      "Caption",
+      "Data Summary",
+      binding_step = binding_step
+    ),
+    actionButton("update", "Update text!", class = "btn-success"),
+    textOutput("custom_text")
+  )
+
+  server <- function(input, output, session) {
+    output$custom_text <- renderText(input$caption)
+    observeEvent(input$update, {
+      updateCustomTextInput("caption", value = "new text")
+    })
+  }
+  shinyApp(ui, server)
+}
 ```
 
 ![](image/12-understand-shiny-inputs/05-update-input-text.png)
 
+## Sending custom message from debugger {-}
 
-We put breakpoints in the receiveMessage and setValue methods and reload the page. Upon reload, the JavaScript debugger opens starts in find. You may click on the next blue arrow until you reach receiveMessage
+1. Run the shiny app.
+
+```{r}
+#| eval: false
+
+OSUICode::updateCustomTextInputExample(3)
+
+```
+
+
+2. Open the inspector and put breakpoints in the `receiveMessage` and `setValue` methods.
+
+3. Reload the page.
+
+4. Change the property `value` of object `data` with `data.value = "custom message";`
+
+5. Click on the next arrow call `setValue`.
+
+6. If you run `$(el).val(value);` in the debugger console, the DOM will be updated instantaneously with the new text.
+
+> Please note that after clicking the button, the output **value still does not change**.
+
+
+## Updating outputs {-}
+
+**subscribe** listens to events defining Shiny to update the input value and make it available in the app.
+
+For that purpose we need to define the **event listeners** to update the app.
+
+1. Use event `keyup` if you want to update *after a key is released on the keyboard*.
+2. Use event `input` if you want to update *after copying and pasting any text in the input field or dictating text*.
+3. The **callback** parameter ensures that the new value is *captured by Shiny*.
+
+
+```javascript
+subscribe: function(el, callback) {
+      $(el).on('keyup.customTextBinding input.customTextBinding', function(event) {
+        callback(true);
+      }
+```
+
+> Name convention used: EVENT_LISTENER.BINDING_NAME
 
 
 ## Meeting Videos
