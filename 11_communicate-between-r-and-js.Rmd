@@ -2,14 +2,393 @@
 
 **Learning objectives:**
 
-- THESE ARE NICE TO HAVE BUT NOT ABSOLUTELY NECESSARY
+- Explain the main mechanisms behind a Shiny app responsible for driving the __R/JavaScript communication__.
 
-## SLIDE 1
+- This is crucial if you aim at developing your very own __Shiny input widgets__.
 
-- ADD SLIDES AS SECTIONS (`##`).
-- TRY TO KEEP THEM RELATIVELY SLIDE-LIKE; THESE ARE NOTES, NOT THE BOOK ITSELF.
+<br>
 
-## Meeting Videos
+**HTTP Limitation**
+
+- The __connection is closed__ after each request.
+- We need a __permanent connection__, allowing bidirectional fluxes between __R__ and __JS__
+
+## Introductory example {-}
+
+The Shiny app:
+
+- `actionButton()` _(**sends a message** from the client (JS) to the server (R))_
+
+    - Triggers an `observeEvent()` _(**processes message** and updates the R server)_
+        - Fires `updateSlideInput()`_(**sends a message back** to the client containing the id of the input to update)_
+
+
+- `sliderInput()` 
+
+    - _(JS **receives the message** and updates the corresponding input element)_
+    - _(JS **sends the new input value** to the server)_
+
+![](image/11-r-js-communicate/01-websocket-intro.png){width=80%}
+
+## How R and JS communicate? {-}
+
+**JSON** stands for JavaScript Object Notation. 
+
+- It has the same structure as a **JS object**.
+
+- It can be serialized as a character string.
+
+```json
+{
+  "name": "David",
+  "color": "purple",
+  "planet": "Mars",
+  "animals": [
+    {
+      "name": "Euclide",
+      "type": "cat",
+      "age": 7
+    }
+  ]
+}
+```
+
+```{r}
+#| echo: false
+
+my_json <- '
+{
+  "name": "David",
+  "color": "purple",
+  "planet": "Mars",
+  "animals": [
+    {
+      "name": "Euclide",
+      "type": "cat",
+      "age": 7
+    }
+  ]
+}
+'
+```
+
+
+## Read JSON in R {-}
+
+Read data from a JSON and convert it to the appropriate R structure.
+
+```{r}
+library(jsonlite)
+res <- fromJSON(my_json)
+str(res)
+```
+
+
+## Read JSON in R {-}
+
+If you don't want to get a data.frame we can run.
+
+```{r}
+fromJSON(my_json, simplifyVector = FALSE)
+```
+
+## Export JSON from R {-}
+
+```{r}
+my_list <- list(
+  name = "David",
+  color = "purple",
+  planet = "Mars"
+)
+
+toJSON(my_list)
+```
+
+
+## Export JSON from R {-}
+
+If you want to have have different view:
+
+- `auto_unbox`: automatically unbox() all atomic vectors of length 1.
+- `pretty`: adds indentation whitespace to JSON output. 
+
+```{r}
+my_list <- list(
+  id = "01522",
+  name = "David",
+  organization = list(
+    id = "AWER12",
+    name = "RinteRface",
+    site = "Switzerland"
+  )
+)
+
+toJSON(my_list, auto_unbox = TRUE, pretty = TRUE)
+```
+
+## Read and Export JSON in JS {-}
+
+Read JSON
+
+```javascript
+JSON.parse(my_json)
+```
+
+Export JSON
+
+```javascript
+myObject = {
+  "name": "David",
+  "color": "purple",
+  "planet": "Mars",
+}
+JSON.stringify(my_object)
+```
+
+## What is a websocket? {-}
+
+> It is a computer **communications protocol**, providing a simultaneous two-way communication channel over a single Transmission Control Protocol (TCP) connection.
+
+<br>
+
+<p align="center">
+![](image/11-r-js-communicate/02-Websocket_connection.png)
+<p>
+
+## Creating a server {-}
+
+`httpuv::startServer:` Creates an HTTP/WebSocket server on the specified host and port.
+
+```{r}
+#| file: examples/chapter-11/01-server-example.R
+```
+
+
+## Creating a client {-}
+
+```{r}
+#| eval: false
+
+# set the client
+ws <- websocket::WebSocket$new("ws://127.0.0.1:8080/")
+
+ws$onMessage(function(event) {
+  cat("Client received message:", event$data, "\n")
+})
+
+# Wait for a moment before running next line
+ws$send("Hello server!")
+
+# Close client
+ws$close()
+```
+
+## Websocket diagram {-}
+
+![](image/11-r-js-communicate/03-websocket-basics.png)
+
+
+## Starting connection {-}
+
+To initiate a websocket connection:
+
+- The client sends an HTTP request to the server _(known as **handshake**)_
+- If the server accepts, the returned HTTP code is 101, meaning that we __switch protocole from HTTP to WS__ or WSS
+
+![](image/11-r-js-communicate/04-http-upgrade-to-ws.png)
+
+## Create the app {-}
+
+To start the server, we leverage the `startServer()` function that expects:
+
+  - A __host__, usually `127.0.0.1` if you work locally or `0.0.0.0` if you work from docker. 
+  - A __port__, like `8080` (app may be accessed on `<HOST>:<PORT>` in your web browser).
+  - A list of functions describing the __app__, particularly:
+  
+    - `call` expects the HTTP response.
+    - `onWSOpen` expects the websocket server.
+
+
+## call: HTTP response {-}
+
+The HTTP response is returned by the `call` function and is typically defined as follows:
+
+  - A __status__ code, 200 being the OK HTTP [status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status).
+  - Some __headers__ indicating the content nature.
+  - The __body__, which is what will be displayed upon client request. 
+
+```{r, eval=FALSE}
+http_response <- function(req) {
+  list(
+    status = 200L,
+    headers = list(
+      'Content-Type' = 'text/html'
+    ),
+    body = "Hello world!"
+  )
+}
+```
+
+
+## onWSOpen: websocket server {-}
+
+```{r}
+#| eval: false
+
+onWSOpen = function(ws) {
+
+  # The ws object is a WebSocket object
+  cat("New connection opened.\n")
+
+  # Capture client messages
+  ws$onMessage(function(binary, message) {
+
+    # Save the Response
+    input_message <- jsonlite::fromJSON(message)
+    print(input_message)
+    cat("Number of bins:", input_message$value, "\n")
+ 
+    # Create a plot in the server
+    hist(rnorm(input_message$value))
+    if (!is.null(delay)) Sys.sleep(delay)
+
+    # Create a message to update gauge widget in client side
+    output_message <- jsonlite::toJSON(
+      list(
+        val = sample(0:100, 1),
+        message = "Thanks client! I updated the plot..."
+      ),
+      pretty = TRUE,
+      auto_unbox = TRUE
+    )
+
+    # Sent a message
+    ws$send(output_message)
+    cat(output_message)
+  })
+
+  # Confirm that the server have been closed
+  ws$onClose(function() {
+    cat("Server connection closed.\n")
+  })
+}
+```
+
+
+## App example {-}
+
+```{r}
+#| eval: false
+
+httpuv_app <- function(host = "127.0.0.1", delay = NULL) {
+  s <- httpuv::startServer(
+    host,
+    8080,
+    list(
+      call = function(req) {
+        list(
+          status = 200L,
+          headers = list(
+            'Content-Type' = 'text/html'
+          ),
+          body = sprintf('
+            <!DOCTYPE HTML>
+            <html lang="en">
+              <head>
+                <script language="javascript">
+                  document.addEventListener("DOMContentLoaded", function(event) {
+
+                    var gauge = document.getElementById("mygauge");
+
+                    // Initialize client socket connection
+                    var mySocket = new WebSocket("ws://%s:8080");
+
+                    mySocket.onopen = function (event) {
+                      // do stuff
+                    };
+
+                    // update the gauge value on server message
+                    mySocket.onmessage = function (event) {
+                      var data = JSON.parse(event.data);
+                      gauge.value = data.val;
+                    };
+
+                    // update the value number
+                    var sliderWidget = document.getElementById("slider");
+                    var label = document.getElementById("sliderLabel");
+                    label.innerHTML = "Value:" + slider.value; // init
+
+                    // on change
+                    sliderWidget.oninput = function() {
+                      var val = parseInt(this.value);
+                      mySocket.send(
+                        JSON.stringify({
+                          value: val,
+                          message: "New value for you server!"
+                        })
+                      );
+                      label.innerHTML = "Value:" + val;
+                    };
+                  });
+                </script>
+                <title>Websocket Example</title>
+              </head>
+              <body>
+                <div>
+                  <input type="range" id="slider" name="volume" min="0" max="100">
+                  <label for="slider" id ="sliderLabel"></label>
+                </div>
+                <br/>
+                <label for="mygauge">Gauge:</label>
+                <meter id="mygauge" min="0" max="100" low="33" high="66" optimum="80" value="50"></meter>
+              </body>
+            </html>
+          ', host)
+        )
+      },
+      onWSOpen = function(ws) {
+        # The ws object is a WebSocket object
+        cat("New connection opened.\n")
+
+        # Capture client messages
+        ws$onMessage(function(binary, message) {
+
+          # create plot
+          input_message <- jsonlite::fromJSON(message)
+          print(input_message)
+          cat("Number of bins:", input_message$value, "\n")
+          hist(rnorm(input_message$value))
+          if (!is.null(delay)) Sys.sleep(delay)
+
+          # update gauge widget
+          output_message <- jsonlite::toJSON(
+            list(
+              val = sample(0:100, 1),
+              message = "Thanks client! I updated the plot..."
+            ),
+            pretty = TRUE,
+            auto_unbox = TRUE
+          )
+          ws$send(output_message)
+          cat(output_message)
+        })
+        ws$onClose(function() {
+          cat("Server connection closed.\n")
+        })
+      }
+    )
+  )
+  s
+}
+
+# I need to the host to have access to the port using docker
+app <- httpuv_app("0.0.0.0")
+
+app
+```
+
+
+## Meeting Videos {-}
 
 ### Cohort 1
 
