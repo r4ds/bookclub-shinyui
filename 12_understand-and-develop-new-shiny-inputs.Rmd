@@ -544,7 +544,9 @@ Solve this problem we need to:
 
 ## Setting rate policies {-}
 
-We don’t want to flood the server with useless update requests.
+If you want to change the input value **once the keyboard is completely released** for some time.
+
+1. Define the **debounce** policy in the `getRatePolicy` method to *limit the rate at which a function can fire*, which allows a **delay** before telling Shiny to read the new value
 
 ```javascript
 getRatePolicy: function() {
@@ -554,6 +556,46 @@ getRatePolicy: function() {
   };
 },
 ```
+
+## Setting rate policies {-}
+
+2. It's also important to pass `true` to the `callback` function.
+
+```javascript
+  subscribe: function(el, callback) {
+    $(el).on('keyup.customTextBinding input.textInputBinding', function(event) {
+      callback(true); 
+    });
+
+    $(el).on('change.customTextBinding', function(event) {
+      callback();
+    });
+  },
+```
+
+## Register an input binding {-}
+
+```javascript
+let myBinding = new Shiny.inputBinding();
+  $.extend(myBinding, {
+  // methods go here
+});
+
+Shiny.inputBindings.register(
+  myBinding, 
+  'PACKAGE_NAME.BINDING_NAME'
+);
+```
+
+> Best practice is to name it following PACKAGE_NAME.BINDING_NAME, to avoid conflicts.
+
+## Other binding methods {-}
+
+There are also other methods that don't need to be changed most of the time:
+
+- **getId** returns the object `id`.
+
+- **getType** required to handle custom data formats.
 
 
 
