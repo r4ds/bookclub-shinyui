@@ -507,6 +507,13 @@ subscribe: function(el, callback) {
       }
 ```
 
+```{r}
+#| eval: false
+
+OSUICode::updateCustomTextInputExample(4)
+
+```
+
 > Name convention used: EVENT_LISTENER.BINDING_NAME
 
 
@@ -542,6 +549,13 @@ Solve this problem we need to:
   }
 ```
 
+```{r}
+#| eval: false
+
+OSUICode::updateCustomTextInputExample(5)
+
+```
+
 ## Setting rate policies {-}
 
 If you want to change the input value **once the keyboard is completely released** for some time.
@@ -571,6 +585,13 @@ getRatePolicy: function() {
       callback();
     });
   },
+```
+
+```{r}
+#| eval: false
+
+OSUICode::updateCustomTextInputExample(6)
+
 ```
 
 ## Register an input binding {-}
