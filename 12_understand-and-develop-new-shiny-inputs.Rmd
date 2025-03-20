@@ -619,6 +619,38 @@ There are also other methods that don't need to be changed most of the time:
 - **getType** required to handle custom data formats.
 
 
+## Edit an input binding {-}
+
+
+```javascript
+$(function() {
+
+  // Wait for the `shiny:connected` event, so that the `Shiny` JS object exists
+  $(document).on('shiny:connected', function(event) {
+  
+    // Unbind all inputs
+    Shiny.unbindAll();
+    
+    // Extend the binding and edit its content
+    $.extend(
+    
+      // Access the binding registry
+      Shiny
+      .inputBindings
+      .bindingNames['shiny.actionButtonInput']
+    . .binding, {
+    
+        // do whathever you want to edit existing methods
+        
+      });
+    
+    // Apply the new changes with Shiny.bindAll()
+    Shiny.bindAll();
+  });
+});
+```
+
+
 
 ## Meeting Videos
 
