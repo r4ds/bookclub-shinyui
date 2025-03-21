@@ -618,9 +618,54 @@ There are also other methods that don't need to be changed most of the time:
 
 - **getType** required to handle custom data formats.
 
+## Edit an input binding {-}
+
+1. Let's the app without any new `javascript`.
+
+```r
+library(shiny)
+library(OSUICode)
+
+ui <- fluidPage(
+  actionButton("button1", icon("plus")),
+  actionButton("button2", uiOutput("val")),
+  actionButton("reset", icon("undo")),
+  plotOutput("plot")
+)
+
+server <- function(input, output) {
+  output$val <- renderUI({
+    paste("Value: ", input$button2)
+  })
+
+  output$plot <- renderPlot({
+    validate(
+      need(
+        input$button2 >= 10,
+        message = "Only visible after 10 clicks on
+        the second button"
+      )
+    )
+    hist(rnorm(100))
+  })
+
+  observeEvent(input$reset, {
+    if (input$button2 == 0) {
+      showNotification(
+        "Button successfuly reset",
+        type = "warning"
+      )
+    }
+  })
+}
+
+shinyApp(ui, server)
+```
+
 
 ## Edit an input binding {-}
 
+2. Check the needed changes.
 
 ```javascript
 $(function() {
@@ -632,23 +677,100 @@ $(function() {
     Shiny.unbindAll();
     
     // Extend the binding and edit its content
-    $.extend(
-    
-      // Access the binding registry
-      Shiny
+    // Access the binding registry
+    $.extend(Shiny
       .inputBindings
       .bindingNames['shiny.actionButtonInput']
-    . .binding, {
-    
-        // do whathever you want to edit existing methods
-        
+      .binding, {
+        reset: function(el) {
+         $(el).data('val', 0);
+        },
+        subscribe: function(el, callback) {
+          $(el).on('click.actionButtonInputBinding', function(e) {
+            var $el = $(this);
+            var val = $el.data('val') || 0;
+            $el.data('val', val + 1);
+
+            callback();
+          });
+
+          $(el).on('change.actionButtonInputBinding', function(e) {
+            debugger;
+            callback();
+          });
+
+        }
       });
-    
+      
     // Apply the new changes with Shiny.bindAll()
     Shiny.bindAll();
   });
+
+  $('#button1').on('click', function() {
+    var $obj = $('#button2');
+    var inputBinding = $obj.data('shiny-input-binding');
+    var val = $obj.data('val') || 0;
+    inputBinding.setValue($obj, val + 10);
+    $obj.trigger('change');
+  });
+
+  $('#reset').on('click', function() {
+    var $obj = $('#button2');
+    var inputBinding = $obj.data('shiny-input-binding');
+    inputBinding.reset($obj);
+    $obj.trigger('change');
+  });
 });
 ```
+
+
+## Edit an input binding {-}
+
+3. Confirm it's impact in the app.
+
+```r
+library(shiny)
+library(OSUICode)
+
+ui <- tagList(
+  fluidPage(
+    actionButton("button1", icon("plus")),
+    actionButton("button2", uiOutput("val")),
+    actionButton("reset", icon("undo")),
+    plotOutput("plot")
+  ),
+  editBindingDeps()
+)
+
+server <- function(input, output) {
+  output$val <- renderUI({
+    paste("Value: ", input$button2)
+  })
+
+  output$plot <- renderPlot({
+    validate(
+      need(
+        input$button2 >= 10,
+        message = "Only visible after 10 clicks on
+        the second button"
+      )
+    )
+    hist(rnorm(100))
+  })
+
+  observeEvent(input$reset, {
+    if (input$button2 == 0) {
+      showNotification(
+        "Button successfuly reset",
+        type = "warning"
+      )
+    }
+  })
+}
+
+shinyApp(ui, server)
+```
+
 
 
 
