@@ -1329,6 +1329,284 @@ server <- function(input, output, session) {
 shinyApp(ui, server)
 ```
 
+## Using `Shiny.setInputValue` {-}
+
+- Avoids the creation of an input binding **(faster to code)**.
+- Can not be updated from R
+
+> **Note:** If you need to set the input even when **the value did not change** you need to specify a priority option.
+
+```javascript
+Shiny.setInputValue('myinput', value, {priority: 'event'});
+```
+
+## `Shiny.setInputValue` and Shiny JavaScript events {-}
+
+- On the R side, we’ll access it with `input$isMac`.
+- This allows you to conditionally display elements
+
+```javascript
+// 1. Wait for the shiny:connected event
+$(document).on('shiny:connected', function(event) {
+  
+  // 2. Access to the Shiny JS object
+  Shiny.setInputValue(
+  
+    // 3. Definine the id to use
+    'isMac', 
+    
+    // 4. Confirm if the user has MacOS
+    (navigator.appVersion.indexOf('Mac') != -1)
+    
+  );
+  
+});
+```
+
+## `Shiny.setInputValue` and Shiny JavaScript events {-}
+
+```r
+library(shiny)
+library(OSUICode)
+library(shinyWidgets)
+
+ui <- fluidPage(
+  useShinydashboard(),
+  tags$head(
+    tags$script(
+      HTML("$(function() {
+        $(document).on('shiny:connected', function(event) {
+          Shiny.setInputValue(
+            'isMac',
+            (navigator.appVersion.indexOf('Mac') != -1)
+          );
+        });
+      });"
+    ))
+  ),
+  verbatimTextOutput("info"),
+  box2(
+    id = "mybox",
+    title = "A box",
+  )
+)
+
+server <- function(input, output) {
+  output$info <- renderPrint(input$isMac)
+  observeEvent({
+    req(isTRUE(input$isMac))
+  }, {
+    updateBox2(
+      "mybox",
+      action = "update",
+      options = list(
+        title = "Only visible for Mac users"
+      )
+    )
+  })
+}
+
+shinyApp(ui, server)
+```
+
+## Input handlers: without `getType` {-}
+
+- Manipulate data generated on the JS side **before** injecting them in R.
+- Can be added with the `registerInputHandler` function:
+
+    - **type**: Allows the handler to connect to `Shiny.setInputValue` *(packageName.handlerName)*.
+    - A **function** to transform data, having data as main parameter.
+
+```r
+library(shiny)
+
+registerInputHandler("myPKG.textDate", function(data, ...) {
+  if (is.null(data)) {
+    NULL
+  } else {
+    res <- try(as.Date(unlist(data)), silent = TRUE)
+    if ("try-error" %in% class(res)) {
+      warning("Failed to parse dates!")
+      data
+    } else {
+      res
+    }
+  }
+}, force = TRUE)
+
+ui <- fluidPage(
+  tags$script(HTML(
+    "$(function(){
+      $(document).on('shiny:connected', function() {
+        var currentTime = new Date();
+        Shiny.setInputValue('time1', currentTime);
+        Shiny.setInputValue(
+          'time2:myPKG.textDate',
+          currentTime
+        );
+      });
+    });
+    "
+  )),
+  verbatimTextOutput("res1"),
+  verbatimTextOutput("res2")
+)
+
+server <- function(input, output, session) {
+  output$res1 <- renderPrint({
+    list(class(input$time1), input$time1)
+  })
+  output$res2 <- renderPrint({
+    list(class(input$time2), input$time2)
+  })
+}
+
+shinyApp(ui, server)
+```
+
+## Input handlers: with `getType` {-}
+
+1. Add a custom data attribute to the input tag
+
+```r
+customTextInput <- function(...) {
+
+type <- if (inherits(value, "Date")) {
+  "date"
+} else {
+  NULL
+}
+
+tags$input(
+  id = inputId,
+  type = "text",
+  class = "form-control input-text",
+  value = value,
+  placeholder = placeholder,
+  `data-data-type` = type # NEW ATRIBUTE
+)
+
+}
+```
+
+
+## Input handlers: with `getType` {-}
+
+2. Define our custom handler when the package is loaded.
+
+```r
+# on zzz.R
+
+.onLoad <- function(...) {
+  registerInputHandler(
+    "OSUICode.textDate", function(data, ...) {
+      if (is.null(data)) {
+        NULL
+      } else {
+        res <- try(as.Date(unlist(data)), silent = TRUE)
+        if ("try-error" %in% class(res)) {
+          warning("Failed to parse dates!")
+          data
+        } else {
+          res
+        }
+      }
+  }, force = TRUE)
+}
+
+```
+
+## Input handlers: with `getType` {-}
+
+3. Edit the `getType` binding method
+
+```r
+getType: function getType(el) {
+  var dataType = $(el).data("data-type");
+  if (dataType === "date") return "OSUICode.textDate";
+  else if (dataType === "number") return "OSUICode.textNumber";
+  else return false; // Default behavior
+},
+```
+
+> **Note:** To use the Shiny built-in handler, we could return "shiny.date" instead. 
+
+
+## Extending input handlers with numbers {-}
+
+1. Define an input handler for numeric data in the `zzz.R` file.
+
+```r
+registerInputHandler(
+  "OSUICode.textNumber", function(data, ...) {
+    if (is.null(data)) {
+      NULL
+    } else {
+      res <- as.numeric(unlist(data))
+      if (is.na(res)) {
+        data
+      } else {
+        res
+      }
+    }
+  }, force = TRUE)
+```
+
+## Extending input handlers with numbers {-}
+
+2. Update the JavaScript `getType` method.
+
+```javascript
+getType: function getType(el) {
+  var dataType = $(el).data('data-type');
+  if (dataType === 'date') return 'OSUICode.textDate';
+  else if (dataType === 'number') return 'OSUICode.textNumber';
+  else return false;
+}
+```
+
+
+## Extending input handlers with numbers {-}
+
+3. Update the `customTextInput` function to manage numeric data.
+
+```r
+customTextInput <- function(...) {
+
+type <- if (inherits(value, "Date")) {
+  "date"
+} else if (inherits(value, "numeric")) {
+  "number"
+} else {
+  NULL
+}
+
+tags$input(
+  id = inputId,
+  type = "text",
+  class = "form-control input-text",
+  value = value,
+  placeholder = placeholder,
+  `data-data-type` = type # NEW ATRIBUTE
+)
+
+}
+```
+
+
+## Extending input handlers with numbers {-}
+
+Let's see the app.
+
+```
+library(OSUICode)
+
+customTextInputHandlerExample(7, "Nombre")
+customTextInputHandlerExample(7, Sys.Date())
+customTextInputHandlerExample(7, 5)
+```
+
+> **Note:** Since the `data-type` is set at app startup by checking the class of the value, **it will never change later**.
 
 ## Meeting Videos
 
