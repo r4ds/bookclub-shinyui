@@ -620,7 +620,7 @@ There are also other methods that don't need to be changed most of the time:
 
 ## Edit an input binding {-}
 
-1. Let's the app without any new `javascript`.
+1. Let's run the app without any new `Javascript`.
 
 ```r
 library(shiny)
@@ -726,7 +726,7 @@ $(function() {
 
 ## Edit an input binding {-}
 
-3. Confirm it's impact in the app.
+3. Confirm its impact in the app.
 
 ```r
 library(shiny)
@@ -774,7 +774,7 @@ shinyApp(ui, server)
 ## Capturing the state of a box in a (secundary) input {-}
 
 1. Define an id for the element.
-2. Add the JS dependencies the function `boxDeps()`.
+2. Add to JS dependencies the function `boxDeps()`.
 
 ```r
 box <- function(.., id = NULL, title = NULL, footer = NULL,
@@ -800,7 +800,7 @@ box <- function(.., id = NULL, title = NULL, footer = NULL,
 ## Capturing the state of a box in a (secundary) input {-}
 
 1. Define an id for the element.
-2. Add the JS dependencies the function `boxDeps()`.
+2. Add the JS dependencies to the function `boxDeps()`.
 
 ```r
 boxDeps <- function() {
@@ -813,7 +813,7 @@ boxDeps <- function() {
 }
 ```
 
-## Capturing the state of a box in a (secundary) input {-}
+## Capturing the state of a box in a (secondary) input {-}
 
 3. Create an update function to change the status of the box.
 
@@ -932,7 +932,7 @@ shinyApp(ui, server)
 
 ## Getting rid of the `renderUI` {-}
 
-Let's the effect of **slow rendering**.
+Let's observe the effect of **slow rendering**.
 
 > The whole piece of UI is re-rendered each time, while **only the box class** should be modified.
 
