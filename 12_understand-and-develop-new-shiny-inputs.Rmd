@@ -618,7 +618,995 @@ There are also other methods that don't need to be changed most of the time:
 
 - **getType** required to handle custom data formats.
 
+## Edit an input binding {-}
 
+1. Let's run the app without any new `Javascript`.
+
+```r
+library(shiny)
+library(OSUICode)
+
+ui <- fluidPage(
+  actionButton("button1", icon("plus")),
+  actionButton("button2", uiOutput("val")),
+  actionButton("reset", icon("undo")),
+  plotOutput("plot")
+)
+
+server <- function(input, output) {
+  output$val <- renderUI({
+    paste("Value: ", input$button2)
+  })
+
+  output$plot <- renderPlot({
+    validate(
+      need(
+        input$button2 >= 10,
+        message = "Only visible after 10 clicks on
+        the second button"
+      )
+    )
+    hist(rnorm(100))
+  })
+
+  observeEvent(input$reset, {
+    if (input$button2 == 0) {
+      showNotification(
+        "Button successfuly reset",
+        type = "warning"
+      )
+    }
+  })
+}
+
+shinyApp(ui, server)
+```
+
+
+## Edit an input binding {-}
+
+2. Check the needed changes.
+
+```javascript
+$(function() {
+
+  // Wait for the `shiny:connected` event, so that the `Shiny` JS object exists
+  $(document).on('shiny:connected', function(event) {
+  
+    // Unbind all inputs
+    Shiny.unbindAll();
+    
+    // Extend the binding and edit its content
+    // Access the binding registry
+    $.extend(Shiny
+      .inputBindings
+      .bindingNames['shiny.actionButtonInput']
+      .binding, {
+        reset: function(el) {
+         $(el).data('val', 0);
+        },
+        subscribe: function(el, callback) {
+          $(el).on('click.actionButtonInputBinding', function(e) {
+            var $el = $(this);
+            var val = $el.data('val') || 0;
+            $el.data('val', val + 1);
+
+            callback();
+          });
+
+          $(el).on('change.actionButtonInputBinding', function(e) {
+            debugger;
+            callback();
+          });
+
+        }
+      });
+      
+    // Apply the new changes with Shiny.bindAll()
+    Shiny.bindAll();
+  });
+
+  $('#button1').on('click', function() {
+    var $obj = $('#button2');
+    var inputBinding = $obj.data('shiny-input-binding');
+    var val = $obj.data('val') || 0;
+    inputBinding.setValue($obj, val + 10);
+    $obj.trigger('change');
+  });
+
+  $('#reset').on('click', function() {
+    var $obj = $('#button2');
+    var inputBinding = $obj.data('shiny-input-binding');
+    inputBinding.reset($obj);
+    $obj.trigger('change');
+  });
+});
+```
+
+
+## Edit an input binding {-}
+
+3. Confirm its impact in the app.
+
+```r
+library(shiny)
+library(OSUICode)
+
+ui <- tagList(
+  fluidPage(
+    actionButton("button1", icon("plus")),
+    actionButton("button2", uiOutput("val")),
+    actionButton("reset", icon("undo")),
+    plotOutput("plot")
+  ),
+  editBindingDeps()
+)
+
+server <- function(input, output) {
+  output$val <- renderUI({
+    paste("Value: ", input$button2)
+  })
+
+  output$plot <- renderPlot({
+    validate(
+      need(
+        input$button2 >= 10,
+        message = "Only visible after 10 clicks on
+        the second button"
+      )
+    )
+    hist(rnorm(100))
+  })
+
+  observeEvent(input$reset, {
+    if (input$button2 == 0) {
+      showNotification(
+        "Button successfuly reset",
+        type = "warning"
+      )
+    }
+  })
+}
+
+shinyApp(ui, server)
+```
+
+## Capturing the state of a box in a (secundary) input {-}
+
+1. Define an id for the element.
+2. Add to JS dependencies the function `boxDeps()`.
+
+```r
+box <- function(.., id = NULL, title = NULL, footer = NULL,
+                 background = NULL, width = 6, height = NULL,
+                 collapsible = FALSE, collapsed = FALSE) {
+  
+  # ....; Extra code removed
+  
+  tagList(
+    boxDeps(), # required to attach the binding
+    div(
+      class = if (!is.null(width)) paste0("col-sm-", width),
+      div(
+        id = id, # required to target the unique box
+        class = boxClass, # required to target all boxes
+        # ....; Extra code removed (box header, body, footer)
+      )
+    )
+  )
+}
+```
+
+## Capturing the state of a box in a (secundary) input {-}
+
+1. Define an id for the element.
+2. Add the JS dependencies to the function `boxDeps()`.
+
+```r
+boxDeps <- function() {
+  htmlDependency(
+    name = "boxBinding",
+    version = "1.0.0",
+    src = c(file = system.file("input-system/input-bindings", package = "OSUICode")),
+    script = "boxBinding.js"
+  )
+}
+```
+
+## Capturing the state of a box in a (secondary) input {-}
+
+3. Create an update function to change the status of the box.
+
+```r
+updateBox <- function(
+  id, 
+  session = getDefaultReactiveDomain()
+) {
+  session$sendInputMessage(id, message = NULL)
+}
+```
+
+## Capturing the state of a box in a (secundary) input {-}
+
+4. Defining the binding for the secundary input.
+
+```javascript
+let boxBinding = new Shiny.InputBinding();
+$.extend(boxBinding, {
+  find: function(scope) {
+    return $(scope).find('.box');
+  },
+  getValue: function(el) {
+    let isCollapsed = $(el).hasClass('collapsed-box');
+    return {collapsed: isCollapsed}; // this will be a list in R
+  },
+  setValue: function(el, value) {
+    $(el).toggleBox();
+  },
+  receiveMessage: function(el, data) {
+    this.setValue(el, data);
+    $(el).trigger('change');
+  },
+  subscribe: function(el, callback) {
+    $(el).on('click', '[data-widget="collapse"]', function(event) {
+      setTimeout(function() {
+        callback();
+      }, 50);
+    });
+
+    $(el).on('change', function(event) {
+      setTimeout(function() {
+        callback();
+      }, 50);
+    });
+  },
+  unsubscribe: function(el) {
+    $(el).off('.boxBinding');
+  }
+});
+
+Shiny.inputBindings.register(boxBinding, 'box-input');
+
+
+$(function() {
+  // overwrite box animation speed. Putting 500 ms add unnecessary delay for Shiny.
+  $.AdminLTE.boxWidget.animationSpeed = 10;
+});
+```
+
+
+## Capturing the state of a box in a (secundary) input {-}
+
+Let's run the app before adding the JS code.
+
+```r
+library(shiny)
+library(shinyWidgets)
+library(OSUICode)
+
+ui <- fluidPage(
+  # import shinydashboard deps without the need of
+  # the dashboard template
+  useShinydashboard(),
+
+  tags$style("body { background-color: ghostwhite};"),
+
+  br(),
+  box(
+    title = textOutput("box_state"),
+    "Box body",
+    id = "mybox",
+    collapsible = TRUE,
+    plotOutput("plot")
+  ),
+  actionButton(
+    "toggle_box",
+    "Toggle Box",
+    class = "bg-success"
+  )
+)
+
+server <- function(input, output, session) {
+  output$plot <- renderPlot({
+    req(!input$mybox$collapsed)
+    plot(rnorm(200))
+  })
+
+  output$box_state <- renderText({
+    state <- if (input$mybox$collapsed) {
+      "collapsed"
+    } else {
+      "uncollapsed"
+    }
+    paste("My box is", state)
+  })
+
+  observeEvent(input$toggle_box, {
+    updateBox("mybox")
+  })
+
+}
+
+shinyApp(ui, server)
+```
+
+## Getting rid of the `renderUI` {-}
+
+Let's observe the effect of **slow rendering**.
+
+> The whole piece of UI is re-rendered each time, while **only the box class** should be modified.
+
+```r
+library(shiny)
+library(shinyWidgets)
+library(OSUICode)
+
+ui <- fluidPage(
+  # import shinydashboard deps without the need of the
+  # dashboard template
+  useShinydashboard(),
+
+  tags$style("body { background-color: ghostwhite};"),
+
+  br(),
+  uiOutput("custom_box"),
+  
+  br(),
+  br(),
+  selectInput(
+    "widthvalue",
+    "Width Value",
+    choices = 6:12
+  )
+)
+
+server <- function(input, output, session) {
+
+  dummy_task <- reactive({
+    Sys.sleep(5)
+    input$widthvalue
+  })
+
+  output$custom_box <- renderUI({
+    dummy_task()
+    box(
+      title = "Box",
+      width = dummy_task(),
+      "Box body",
+      background = "blue"
+    )
+  })
+}
+
+shinyApp(ui, server)
+```
+
+## Getting rid of the `renderUI` {-}
+
+1. Customize the previously designed `box()` function to **gather as many parameters as possible**.
+
+    - `width` should be numeric
+    - `title` might be any HTML tag or a list of HTML tags
+    
+2. Omit any `NULL` parameter from the `props` list.
+
+```r
+box2 <- function(..., id = NULL, title = NULL, footer = NULL,
+                 background = NULL, width = 6, height = NULL,
+                 collapsible = FALSE, collapsed = FALSE) {
+  
+  if (!is.null(title)) {
+    processed_title <- if (
+      inherits(title, "shiny.tag.list") ||
+      inherits(title, "shiny.tag")
+    ) {
+      as.character(title)
+    } else {
+      title
+    }
+  }
+  
+  # We don’t want to send empty arrays
+  props <- dropNulls(
+    list(
+      title = processed_title,
+      background = background,
+      width = width
+    )
+  )
+  
+  # ....; Extra code removed
+}
+```
+
+## Getting rid of the `renderUI` {-}
+
+3. Convert our properties to a `JSON` with `toJSON()`.
+
+4. Embed the `JSON` in a script tag with `data-for` attribute pointing to the unique `id` parameter.
+
+```r
+box2 <- function(..., id = NULL, title = NULL, footer = NULL,
+                 background = NULL, width = 6, height = NULL,
+                 collapsible = FALSE, collapsed = FALSE) {
+  
+  # ....; Extra code removed
+  
+  configTag <- tags$script(
+    type = "application/json",
+    `data-for` = id,
+    jsonlite::toJSON(
+      x = props,
+      auto_unbox = TRUE,
+      json_verbatim = TRUE
+    )
+  )
+  
+}
+```
+
+## Getting rid of the `renderUI` {-}
+
+5. Add the configuration tag to the `box()` output.
+6. Attach the *not-yet-designed* **`JS` dependencies with `tagList()`**.
+
+```r
+box2 <- function(..., id = NULL, title = NULL, footer = NULL,
+                 background = NULL, width = 6, height = NULL,
+                 collapsible = FALSE, collapsed = FALSE) {
+  
+  # ....; Extra code removed
+  
+  boxTag <- tagQuery(
+    box(
+      ..., id = id, title = title, footer = footer,
+      background = background, width = width, height = height,
+      collapsible = collapsible, collapsed = collapsed
+    )
+  )$
+    append(configTag)$
+    allTags()
+
+  tagList(box2Deps(), boxTag)
+}
+```
+
+## Getting rid of the `renderUI` {-}
+
+5. Add the configuration tag to the `box()` output.
+6. Attach the *not-yet-designed* **`JS` dependencies with `tagList()`**.
+
+```r
+box2Deps <- function() {
+  htmlDependency(
+    name = "boxBinding",
+    version = "1.0.0",
+    src = c(file = system.file(
+      "input-system/input-bindings", 
+      package = "OSUICode"
+    )),
+    script = "boxBindingEnhanced.js"
+  )
+}
+```
+
+## Getting rid of the `renderUI` {-}
+
+7. Modify the `updateBox()` function to handle: 
+
+    - Toggle
+    - Update possibilities
+
+```r
+updateBox2 <- function(
+  id, 
+  action = c("toggle", "update"), 
+  options = NULL,
+  session = getDefaultReactiveDomain()
+) {
+  # for update, we take a list of options
+  if (action == "update") {
+    # handle case where options are shiny tag 
+    # or a list of tags ...
+    options <- lapply(options, function(o) {
+      if (inherits(o, "shiny.tag") || 
+          inherits(o, "shiny.tag.list")) {
+        o <- as.character(o)
+      }
+      o
+    })
+    message <- dropNulls(
+      c(
+        action = action, 
+        options = list(options)
+      )
+    )
+    session$sendInputMessage(id, message)
+  } else if (message == "toggle") {
+    session$sendInputMessage(id, message = match.arg(action))
+  }
+}
+```
+
+## Getting rid of the `renderUI` {-}
+
+7. Defining the new JS binding.
+
+> Use the `_` prefix to make the difference between the **default input binding** methods and the **user-defined methods**.
+
+```javascript
+let boxBinding = new Shiny.InputBinding();
+
+$.extend(boxBinding, {
+  
+  // we are using the same class
+  find: function(scope) {
+    return $(scope).find('.box');
+  },
+  
+  // we still want to comunite to R
+  // wheter the box is collapsed or not
+  getValue: function(el) {
+    let isCollapsed = $(el).hasClass('collapsed-box');
+    return {collapsed: isCollapsed}; // this will be a list in R
+  },
+  
+  // Just returns the config script:
+  _getConfigScript: function(el) {
+    return(
+      // Starting from the box
+      $(el)
+        // We have to look one level up to be able to use the `find` method
+        .parent()
+        // Target the script tag for current id
+        .find("script[data-for='" + el.id + "']")
+    );
+  },
+  
+  // Converts the script content to a JS object
+  _processConfig: function(el) {
+    return(
+      JSON.parse(
+        this
+        ._getConfigScript(el)
+        .html()
+      )
+    );
+  },
+  
+  // user defined binding: update box width
+  _updateWidth: function(el, o, n) {
+  
+    // removes old class
+    $(el).parent().toggleClass("col-sm-" + o);
+    $(el).parent().addClass("col-sm-" + n);
+    
+    // trigger resize so that output resize
+    $(el).trigger('resize');
+  },
+  
+  // Input binding default method
+  setValue: function(el, value) {
+    let config = this._processConfig(el);
+
+    // Only apply change for action update
+    if (value.action === "update") {
+    
+      // check whether value.options.width exists
+      if (value.options.hasOwnProperty("width")) {
+              
+        // config.width returns the initial width
+        // value.options.width contains the new width value
+        //   provided in the updateBox2 message output
+        if (value.options.width !== config.width) {
+          this._updateWidth(
+            el,
+            config.width,
+            value.options.width
+          )
+           
+          // Updating the confing after changing the UI
+          config.width = value.options.width;
+        }
+      }
+      
+      // other items to update
+      if (value.options.hasOwnProperty("title")) {
+        if (value.options.title !== config.title) {
+          let newTitle;
+          newTitle = `<h3 class="box-title">${value.options.title}</h3>`
+          newTitle = $.parseHTML(newTitle);
+
+          $(el)
+            .find(".box-title")
+            .replaceWith($(newTitle));
+
+          config.title = value.options.title;
+        }
+      }
+
+      // Don’t forget to update the config script attached
+      // to the card tag at the end of the update condition
+      // OTHERWISE THE INPUT VALUE WON’T BE MODIFIED
+      this
+        ._getConfigScript(el)
+        .replaceWith(
+          '<script type="application/json" data-for="' +
+          el.id +
+          '">' +
+          JSON.stringify(config) +
+          '</script>'
+        );
+
+    } else if (value.action === "toggle") {
+      // if action is toggle
+      $(el).toggleBox();
+    }
+
+  },
+  receiveMessage: function(el, data) {
+    this.setValue(el, data);
+    $(el).trigger('change');
+  },
+  subscribe: function(el, callback) {
+    $(el).on('click', '[data-widget="collapse"]', function(event) {
+      setTimeout(function() {
+        callback();
+      }, 50);
+    });
+
+    $(el).on('change', function(event) {
+      setTimeout(function() {
+        callback();
+      }, 50);
+    });
+  },
+  unsubscribe: function(el) {
+    $(el).off('.boxBinding');
+  }
+});
+
+Shiny.inputBindings.register(boxBinding, 'box-input');
+
+
+$(function() {
+  // overwrite box animation speed. Putting 500 ms add unnecessary delay for Shiny.
+  $.AdminLTE.boxWidget.animationSpeed = 10;
+});
+```
+
+## Getting rid of the `renderUI` {-}
+
+8. Combine all together in a new app.
+
+
+```r
+library(shiny)
+library(shinyWidgets)
+library(OSUICode)
+
+ui <- fluidPage(
+  # import shinydashboard deps without the need of the
+  # dashboard template
+  useShinydashboard(),
+
+  tags$style("body { background-color: ghostwhite};"),
+
+  br(),
+  box2(id = "mybox",
+       title = "Box",
+       width = 6,
+       "Box body",
+       background = "blue"),
+  
+  br(),
+  br(),
+  selectInput(
+    "widthvalue",
+    "Width Value",
+    choices = 6:12
+  )
+)
+
+server <- function(input, output, session) {
+
+  dummy_task <- reactive({
+    Sys.sleep(5)
+    input$widthvalue
+  })
+
+  observeEvent(dummy_task(), {
+    updateBox2(
+      "mybox",
+      action = "update",
+      options = list(
+        width = dummy_task()
+      )
+    )
+  })
+}
+
+shinyApp(ui, server)
+```
+
+## Using `Shiny.setInputValue` {-}
+
+- Avoids the creation of an input binding **(faster to code)**.
+- Can not be updated from R
+
+> **Note:** If you need to set the input even when **the value did not change** you need to specify a priority option.
+
+```javascript
+Shiny.setInputValue('myinput', value, {priority: 'event'});
+```
+
+## `Shiny.setInputValue` and Shiny JavaScript events {-}
+
+- On the R side, we’ll access it with `input$isMac`.
+- This allows you to conditionally display elements
+
+```javascript
+// 1. Wait for the shiny:connected event
+$(document).on('shiny:connected', function(event) {
+  
+  // 2. Access to the Shiny JS object
+  Shiny.setInputValue(
+  
+    // 3. Definine the id to use
+    'isMac', 
+    
+    // 4. Confirm if the user has MacOS
+    (navigator.appVersion.indexOf('Mac') != -1)
+    
+  );
+  
+});
+```
+
+## `Shiny.setInputValue` and Shiny JavaScript events {-}
+
+```r
+library(shiny)
+library(OSUICode)
+library(shinyWidgets)
+
+ui <- fluidPage(
+  useShinydashboard(),
+  tags$head(
+    tags$script(
+      HTML("$(function() {
+        $(document).on('shiny:connected', function(event) {
+          Shiny.setInputValue(
+            'isMac',
+            (navigator.appVersion.indexOf('Mac') != -1)
+          );
+        });
+      });"
+    ))
+  ),
+  verbatimTextOutput("info"),
+  box2(
+    id = "mybox",
+    title = "A box",
+  )
+)
+
+server <- function(input, output) {
+  output$info <- renderPrint(input$isMac)
+  observeEvent({
+    req(isTRUE(input$isMac))
+  }, {
+    updateBox2(
+      "mybox",
+      action = "update",
+      options = list(
+        title = "Only visible for Mac users"
+      )
+    )
+  })
+}
+
+shinyApp(ui, server)
+```
+
+## Input handlers: without `getType` {-}
+
+- Manipulate data generated on the JS side **before** injecting them in R.
+- Can be added with the `registerInputHandler` function:
+
+    - **type**: Allows the handler to connect to `Shiny.setInputValue` *(packageName.handlerName)*.
+    - A **function** to transform data, having data as main parameter.
+
+```r
+library(shiny)
+
+registerInputHandler("myPKG.textDate", function(data, ...) {
+  if (is.null(data)) {
+    NULL
+  } else {
+    res <- try(as.Date(unlist(data)), silent = TRUE)
+    if ("try-error" %in% class(res)) {
+      warning("Failed to parse dates!")
+      data
+    } else {
+      res
+    }
+  }
+}, force = TRUE)
+
+ui <- fluidPage(
+  tags$script(HTML(
+    "$(function(){
+      $(document).on('shiny:connected', function() {
+        var currentTime = new Date();
+        Shiny.setInputValue('time1', currentTime);
+        Shiny.setInputValue(
+          'time2:myPKG.textDate',
+          currentTime
+        );
+      });
+    });
+    "
+  )),
+  verbatimTextOutput("res1"),
+  verbatimTextOutput("res2")
+)
+
+server <- function(input, output, session) {
+  output$res1 <- renderPrint({
+    list(class(input$time1), input$time1)
+  })
+  output$res2 <- renderPrint({
+    list(class(input$time2), input$time2)
+  })
+}
+
+shinyApp(ui, server)
+```
+
+## Input handlers: with `getType` {-}
+
+1. Add a custom data attribute to the input tag
+
+```r
+customTextInput <- function(...) {
+
+type <- if (inherits(value, "Date")) {
+  "date"
+} else {
+  NULL
+}
+
+tags$input(
+  id = inputId,
+  type = "text",
+  class = "form-control input-text",
+  value = value,
+  placeholder = placeholder,
+  `data-data-type` = type # NEW ATRIBUTE
+)
+
+}
+```
+
+
+## Input handlers: with `getType` {-}
+
+2. Define our custom handler when the package is loaded.
+
+```r
+# on zzz.R
+
+.onLoad <- function(...) {
+  registerInputHandler(
+    "OSUICode.textDate", function(data, ...) {
+      if (is.null(data)) {
+        NULL
+      } else {
+        res <- try(as.Date(unlist(data)), silent = TRUE)
+        if ("try-error" %in% class(res)) {
+          warning("Failed to parse dates!")
+          data
+        } else {
+          res
+        }
+      }
+  }, force = TRUE)
+}
+
+```
+
+## Input handlers: with `getType` {-}
+
+3. Edit the `getType` binding method
+
+```r
+getType: function getType(el) {
+  var dataType = $(el).data("data-type");
+  if (dataType === "date") return "OSUICode.textDate";
+  else if (dataType === "number") return "OSUICode.textNumber";
+  else return false; // Default behavior
+},
+```
+
+> **Note:** To use the Shiny built-in handler, we could return "shiny.date" instead. 
+
+
+## Extending input handlers with numbers {-}
+
+1. Define an input handler for numeric data in the `zzz.R` file.
+
+```r
+registerInputHandler(
+  "OSUICode.textNumber", function(data, ...) {
+    if (is.null(data)) {
+      NULL
+    } else {
+      res <- as.numeric(unlist(data))
+      if (is.na(res)) {
+        data
+      } else {
+        res
+      }
+    }
+  }, force = TRUE)
+```
+
+## Extending input handlers with numbers {-}
+
+2. Update the JavaScript `getType` method.
+
+```javascript
+getType: function getType(el) {
+  var dataType = $(el).data('data-type');
+  if (dataType === 'date') return 'OSUICode.textDate';
+  else if (dataType === 'number') return 'OSUICode.textNumber';
+  else return false;
+}
+```
+
+
+## Extending input handlers with numbers {-}
+
+3. Update the `customTextInput` function to manage numeric data.
+
+```r
+customTextInput <- function(...) {
+
+type <- if (inherits(value, "Date")) {
+  "date"
+} else if (inherits(value, "numeric")) {
+  "number"
+} else {
+  NULL
+}
+
+tags$input(
+  id = inputId,
+  type = "text",
+  class = "form-control input-text",
+  value = value,
+  placeholder = placeholder,
+  `data-data-type` = type # NEW ATRIBUTE
+)
+
+}
+```
+
+
+## Extending input handlers with numbers {-}
+
+Let's see the app.
+
+```
+library(OSUICode)
+
+customTextInputHandlerExample(7, "Nombre")
+customTextInputHandlerExample(7, Sys.Date())
+customTextInputHandlerExample(7, 5)
+```
+
+> **Note:** Since the `data-type` is set at app startup by checking the class of the value, **it will never change later**.
 
 ## Meeting Videos
 
