@@ -21,13 +21,13 @@
   border-bottom: 1px solid #d0e2f2;
 }
 
-#box-text {
-  margin-bottom: 0em;
-}
-
 .callout-icon-container {
   margin-right: 0.5em;
   color: #2980b9;
+}
+
+#text-margin {
+  margin-bottom: 0em;
 }
 
 .callout-icon::before {
