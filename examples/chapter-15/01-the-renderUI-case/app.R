@@ -1,13 +1,7 @@
 library(shiny)
 library(bs4Dash)
-library(tibble)
 
-# NOTE
-# `renderUI` re-renders the whole block each time an associated
-# reactive dependency is invalidated, even though only a little part
-# would deserve to be updated.
-
-new_message <- tibble(
+new_message <- data.frame(
   message = "New message",
   from = "Paul",
   time = "yesterday",
@@ -15,7 +9,6 @@ new_message <- tibble(
 )
 
 shinyApp(
-
   ui = dashboardPage(
     dark = FALSE,
     header = dashboardHeader(
@@ -27,11 +20,10 @@ shinyApp(
     title = "test",
     body = dashboardBody(actionButton("add", "Add message"))
   ),
-
   server = function(input, output) {
 
     messages <- reactiveValues(
-      items = tibble(
+      items = data.frame(
         message = rep("A message", 10),
         from = LETTERS[1:10],
         time = rep("yesterday", 10),
@@ -40,23 +32,22 @@ shinyApp(
     )
 
     observeEvent(input$add, {
-      messages$items <- add_row(messages$items, new_message)
+      messages$items <- rbind(messages$items, new_message)
     })
 
     output$messages <- renderUI({
-      dropdownMenu(
-        badgeStatus = "danger",
-        type = "messages",
-        lapply(seq_len(nrow(messages$items)), function(r) {
-          temp <- messages$items[r, ]
-          messageItem(
-            message = temp$message,
-            from = temp$from,
-            time = temp$time,
-            color = temp$color
-          )
-        })
-      )
+      lapply(seq_len(nrow(messages$items)), function(i) {
+        items_i <- messages$items[i, ]
+        bs4Dash::messageItem(
+          message = items_i$message,
+          from = items_i$from,
+          time = items_i$time,
+          color = items_i$color
+        )
+      }) |>
+        c(badgeStatus = "danger",
+          type = "messages") |>
+        do.call(what = "dropdownMenu")
     })
   }
 )
