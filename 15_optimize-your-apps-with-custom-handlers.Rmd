@@ -1,27 +1,154 @@
 # Optimize your apps with custom handlers
 
+```{r}
+#| echo: false
+#| output: false
+
+library(htmltools)
+
+create_note <- function(title = "Note",
+                        text = ""){
+  
+  tags$div(class = "callout callout-style-default callout-note callout-titled",
+           tags$div(class = "callout-header align-content-center",
+                    tags$div(class = "callout-icon-container",
+                             tags$i(class = "callout-icon")),
+                    tags$div(class = "callout-title-container",
+                             tags$p(id = "box-text", title))),
+           tags$div(class = "callout-body-container callout-body",
+                    tags$p(HTML(text))))
+  
+}
+```
+
+
 **Learning objectives:**
 
-- Leverage internal Shiny JS tools to build highly interactive and optimized interfaces
+- Leverage internal Shiny JS tools to build **highly interactive** and **optimized** interfaces
 
-## Introduction
+## Introduction {-}
 
-- Many functions can update the UI from the server
+Many functions can update the UI from the server
+
 - **update** functions
   - `updateTextInput()`, `updateTabSetPanel()`
 - **toggle** functions
   - `hideTab()`, `showTab()`
-- `renderUI()`, `insertUI()`, `removeUI()`
+- **modify** user interface elements
+  - `renderUI()`, `insertUI()`, `removeUI()`
+  
+<br>
 
-## The renderUI case
+```{r}
+#| echo: false
+
+create_note(text = "The aren't many of this functions, which often obliges to use packages like <code>shinyjs</code> or write <strong>custom JavaScript code</strong>.")
+```
+
+## renderUI and uiOutput {-}
 
 - `renderUI()` and `uiOutput` most famous way to **render** any HTML block from the **server**
 
 - `update____` and `toggle` tools are component-specific, only target the element to modify
 
-- `renderUI()` re-renders the block each time, implies poor performance in complex apps
+- `renderUI()` re-renders **the whole block** each time an associated _reactive dependency_ is invalidated.
 
-- Book examples
+- Results in **poor performances** in complex apps.
+
+## renderUI and uiOutput Example {-}
+
+
+```{r}
+#| echo: false
+
+create_note(text = "We used <code>do.call</code> to execute <code>dropdownMenu</code> in order to update the number of messages in the menu bar.")
+```
+
+```r
+library(shiny)
+library(bs4Dash)
+
+new_message <- data.frame(
+  message = "New message",
+  from = "Paul",
+  time = "yesterday",
+  color = "success"
+)
+
+shinyApp(
+  ui = dashboardPage(
+    dark = FALSE,
+    header = dashboardHeader(
+      rightUi = uiOutput("messages", container = tags$li)
+    ),
+    sidebar = dashboardSidebar(),
+    controlbar = dashboardControlbar(),
+    footer = dashboardFooter(),
+    title = "test",
+    body = dashboardBody(actionButton("add", "Add message"))
+  ),
+  server = function(input, output) {
+    
+    messages <- reactiveValues(
+      items = data.frame(
+        message = rep("A message", 10),
+        from = LETTERS[1:10],
+        time = rep("yesterday", 10),
+        color = rep("success", 10)
+      )
+    )
+    
+    observeEvent(input$add, {
+      messages$items <- rbind(messages$items, new_message)
+    })
+    
+    output$messages <- renderUI({
+      lapply(seq_len(nrow(messages$items)), function(i) {
+        items_i <- messages$items[i, ]
+        bs4Dash::messageItem(
+          message = items_i$message,
+          from = items_i$from,
+          time = items_i$time,
+          color = items_i$color
+        )
+      }) |>
+        c(badgeStatus = "danger",
+          type = "messages") |>
+        do.call(what = "dropdownMenu")
+    })
+  }
+)
+
+```
+
+
+
+## renderUI and uiOutput Example {-}
+
+```{r}
+items = data.frame(
+  message = rep("A message", 2),
+  from = LETTERS[1:2],
+  time = rep("yesterday", 2),
+  color = rep("success", 2)
+)
+
+lapply(seq_len(nrow(items)), function(i) {
+  items_i <- items[i, ]
+  bs4Dash::messageItem(
+    message = items_i$message,
+    from = items_i$from,
+    time = items_i$time,
+    color = items_i$color
+  )
+}) |>
+  c(badgeStatus = "danger",
+    type = "messages") |>
+  do.call(what = getExportedValue("bs4Dash", "dropdownMenu")) |>
+  as.character() |>
+  cat()
+```
+
 
 ## Other Shiny handlers
 
