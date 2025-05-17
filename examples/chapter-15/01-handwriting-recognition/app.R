@@ -70,7 +70,7 @@ server <- function(input, output, session) {
 
     insertUI(selector = "#result2",
              ui = paste0(as.character(input$myinput), collapse = " "),
-             where = "afterEnd")
+             where = "beforeEnd")
   })
 
 }
