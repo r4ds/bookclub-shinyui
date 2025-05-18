@@ -15,6 +15,7 @@ Imports:
     bookdown,
     bs4Dash,
     DiagrammeR,
+    htmltools,
     httpuv,
     jsonlite,
     purrr,
