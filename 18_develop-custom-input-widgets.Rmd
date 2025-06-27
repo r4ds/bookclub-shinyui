@@ -219,6 +219,84 @@ update_tabler_switch <- function (session, inputId, label = NULL, value = NULL) 
 
 **Let's RUN example 2**
 
+## Navbar menu input {-}
+
+To **capture the currently selected tab** to subsequently perform actions on the server side, updating the selected tab based on a button click.
+
+1. Add an **id** attribute
+
+```r
+tabler_navbar_menu <- function(..., id = NULL) {
+  tags$ul(
+    id = id, 
+    class = "nav nav-pills navbar-nav",
+    ...
+  )
+}
+```
+
+```r
+tabler_custom_js <- htmlDependency(
+  name = "tabler-bindings",
+  version = "1.0.7",
+  src = "tabler",
+  package = "OSUICode",
+  script = "input-bindings/navbarMenuBinding.js"
+)
+```
+
+
+
+```javacript
+$(function() {
+  // Input binding
+  let navbarMenuBinding = new Shiny.InputBinding();
+  $.extend(navbarMenuBinding, {
+    find: function(scope) {
+      return $(scope).find('.navbar-nav');
+    },
+    initialize: function(el) {
+      let menuId = '#' + $(el).attr('id');
+      let activeTab = $(`${menuId} .nav-link.active`);
+      // if multiple items are found
+      if (activeTab.length > 0) {
+        let tabId = $(activeTab).attr('data-value');
+        $(activeTab).tab('show');
+        $(`#${tabId}`).addClass('show active');
+      } else {
+        $(`${menuId} .nav-link`)
+        .first()
+        .tab('show');
+      }
+    },
+    // Given the DOM element for the input, return the value
+    getValue: function(el) {
+      let activeTab = $(el).find('a').filter('.nav-link.active');
+      return $(activeTab).attr('data-value');
+    },
+    setValue: function(el, value) {
+      let hrefVal = '#' + value;
+      let menuId = $(el).attr('id');
+      $(`#${menuId} a[data-target="${hrefVal}"]`).tab('show');
+    },
+    receiveMessage: function(el, data) {
+      this.setValue(el, data);
+    },
+    subscribe: function(el, callback) {
+      $(el).on('shown.bs.tab.navbarMenuBinding', function(event) {
+        callback();
+      });
+    },
+    unsubscribe: function(el) {
+      $(el).off('.navbarMenuBinding');
+    }
+  });
+
+  Shiny.inputBindings.register(navbarMenuBinding, 'navbar-menu');
+});
+
+```
+
 
 ## Meeting Videos
 
