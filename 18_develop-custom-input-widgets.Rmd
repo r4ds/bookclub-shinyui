@@ -223,7 +223,7 @@ update_tabler_switch <- function (session, inputId, label = NULL, value = NULL) 
 
 To **capture the currently selected tab** to subsequently perform actions on the server side, updating the selected tab based on a button click.
 
-1. Add an **id** attribute
+1. Add an **id** attribute to `tabler_navbar_menu()`.
 
 ```r
 tabler_navbar_menu <- function(..., id = NULL) {
@@ -235,6 +235,139 @@ tabler_navbar_menu <- function(..., id = NULL) {
 }
 ```
 
+2. Create the JS `navbarMenuBinding` looking for the `navbar-nav` class in the `find` method.
+
+```javascript
+find: function(scope) {
+  return $(scope).find('.navbar-nav');
+}
+```
+
+## Navbar menu input {-}
+
+3. Define the `initialize` method.
+
+```javascript
+initialize: function(el) {
+
+  // Construct the jQuery selector for the container element by its ID
+  let menuId = '#' + $(el).attr('id');
+
+  // Find the currently active tab within the container
+  let activeTab = $(`${menuId} .nav-link.active`);
+
+  // If at least one active tab is found
+  if (activeTab.length > 0) {
+    // Get the associated tab content's ID from the 'data-value' attribute
+    let tabId = $(activeTab).attr('data-value');
+
+    // Activate the tab using Bootstrap's tab API
+    // Remove the .active from other tabs
+    $(activeTab).tab('show');
+
+    // Make sure the corresponding tab content is also visible
+    $(`#${tabId}`).addClass('show active');
+    
+  } else {
+  
+    // If no active tab is found, activate the first tab in the menu
+    $(`${menuId} .nav-link`)
+      .first()
+      .tab('show');
+      
+  }
+}
+
+```
+
+## Navbar menu input {-}
+
+4. Define `getValue` is to return the currently selected tab.
+
+```javascript
+getValue: function(el) {
+  let activeTab = $(el).find('a').filter('nav-link active');
+  return $(activeTab).attr('data-value');
+}
+```
+
+```r
+tabler_navbar_menu_item <- function(text, tabName, 
+                                    icon = NULL, 
+                                    selected = FALSE) {
+  
+  item_cl <- paste0("nav-link", if(selected) " active")
+  
+  tags$li(
+    class = "nav-item",
+    a(
+      class = item_cl,
+      `data-value` = tabName,
+      # Commented since not relevant
+    )
+  )
+}
+```
+
+## Navbar menu input {-}
+
+5. Define `setValue` to update the active tab based on the Bootstrap method.
+
+```javascript
+setValue: function(el, value) {
+  let hrefVal = '#' + value;
+  let menuId = $(el).attr('id');
+  $(`#${menuId} a[data-target="${hrefVal}"]`).tab('show');
+}
+```
+
+## Navbar menu input {-}
+
+6. Create an update function and the `receiveMessage` method to change the tab.
+
+```r
+update_tabler_tab_item <- function(
+  inputId, 
+  value, 
+  session = getDefaultReactiveDomain()
+) {
+  session$sendInputMessage(inputId, message = value)
+}
+```
+
+
+```javascript
+receiveMessage: function(el, data) {
+  this.setValue(el, data);
+}
+```
+## Navbar menu input {-}
+
+7. Define the `subscribe` method to tell Shiny **when to change** the current input value. Here it's the events applied by Bootstrap in order:
+
+- `hide.bs.tab` (on the current active tab).
+- `show.bs.tab` (on the to-be-shown tab).
+- `hidden.bs.tab` (on the previous active tab).
+- `shown.bs.tab` (on the newly-active just-shown tab).
+
+```javascript
+subscribe: function(el, callback) {
+  // important to use shown.bs.tab and not show.bs.tab!
+  $(el).on('shown.bs.tab.navbarMenuBinding', function(e) {
+    callback();
+  });
+},
+  
+unsubscribe: function(el) {
+  $(el).off('.navbarMenuBinding');
+}
+```
+
+
+## Navbar menu input {-}
+
+8. Include this custom input binding.
+
 ```r
 tabler_custom_js <- htmlDependency(
   name = "tabler-bindings",
@@ -245,57 +378,15 @@ tabler_custom_js <- htmlDependency(
 )
 ```
 
-
-
-```javacript
-$(function() {
-  // Input binding
-  let navbarMenuBinding = new Shiny.InputBinding();
-  $.extend(navbarMenuBinding, {
-    find: function(scope) {
-      return $(scope).find('.navbar-nav');
-    },
-    initialize: function(el) {
-      let menuId = '#' + $(el).attr('id');
-      let activeTab = $(`${menuId} .nav-link.active`);
-      // if multiple items are found
-      if (activeTab.length > 0) {
-        let tabId = $(activeTab).attr('data-value');
-        $(activeTab).tab('show');
-        $(`#${tabId}`).addClass('show active');
-      } else {
-        $(`${menuId} .nav-link`)
-        .first()
-        .tab('show');
-      }
-    },
-    // Given the DOM element for the input, return the value
-    getValue: function(el) {
-      let activeTab = $(el).find('a').filter('.nav-link.active');
-      return $(activeTab).attr('data-value');
-    },
-    setValue: function(el, value) {
-      let hrefVal = '#' + value;
-      let menuId = $(el).attr('id');
-      $(`#${menuId} a[data-target="${hrefVal}"]`).tab('show');
-    },
-    receiveMessage: function(el, data) {
-      this.setValue(el, data);
-    },
-    subscribe: function(el, callback) {
-      $(el).on('shown.bs.tab.navbarMenuBinding', function(event) {
-        callback();
-      });
-    },
-    unsubscribe: function(el) {
-      $(el).off('.navbarMenuBinding');
-    }
-  });
-
-  Shiny.inputBindings.register(navbarMenuBinding, 'navbar-menu');
-});
-
+```r
+add_tabler_deps <- function(tag) {
+  # below, the order is of critical importance!
+  deps <- list(bs4_deps, tablers_deps, tabler_custom_js)
+  attachDependencies(tag, deps, append = TRUE)
+}
 ```
+
+**Let's RUN example 3**
 
 
 ## Meeting Videos
