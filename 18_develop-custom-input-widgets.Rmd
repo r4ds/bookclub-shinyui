@@ -1,13 +1,393 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
 # Develop custom input widgets
 
 **Learning objectives:**
 
-- THESE ARE NICE TO HAVE BUT NOT ABSOLUTELY NECESSARY
+- Integrate new inputs after defining:
 
-## SLIDE 1
+    - The template dependencies
+    - The page skeleton
+    - Containers like cards
 
-- ADD SLIDES AS SECTIONS (`##`).
-- TRY TO KEEP THEM RELATIVELY SLIDE-LIKE; THESE ARE NOTES, NOT THE BOOK ITSELF.
+
+
+- Learn how to add
+
+    - Tabler action button
+    - Toggle Switch
+    - Navbar menu input
+
+## Tabler action button {-}
+
+Tabler has **built-in HTML** buttons with a substantial amount of **custom styles** with really simple element, only needs 2 classes:
+
+- `btn`
+- `btn-primary`
+
+```html
+<button class="btn btn-primary">Button</button>
+```
+
+But as input we expect the next behavior:
+
+- When the app starts, the action button has the value 0
+- Each click increments its value by 1
+
+
+## Tabler action button {-}
+
+As `shiny` does that we can use the binding the behind the `shiny::actionButton`.
+
+`actionButtonInputBinding` shiny input binding which apply for elements with `class = action-button`
+
+```javascript
+var actionButtonInputBinding = new InputBinding();
+$.extend(actionButtonInputBinding, {
+  find: function(scope) {
+    return $(scope).find('.action-button');
+  },
+  getValue: function(el) {
+    return $(el).data('val') || 0;
+  },
+  // ....; Extra code removed
+});
+```
+
+## Tabler action button {-}
+
+Now by checking the source code of `shiny::actionButton` we can that:
+
+- Tabler and `shiny` are using the button tag
+- Table don't use the class `btn-default`
+
+```r
+actionButton <- function (inputId, label, icon = NULL, 
+                          width = NULL, ...)  {
+                          
+  value <- restoreInput(id = inputId, default = NULL)
+  
+  tags$button(
+    id = inputId, 
+    style = if (!is.null(width)) {
+      paste0("width: ", validateCssUnit(width), ";")
+    }, 
+    type = "button", 
+    class = "btn btn-default action-button", 
+    `data-val` = value, 
+    list(validateIcon(icon), label), ...
+  )
+}
+```
+
+## Tabler action button {-}
+
+By copying the source code into a new function we can create an action button with Tabler style.
+
+```r
+tabler_button <- function(inputId, label, status = NULL, icon = NULL, width = NULL, ...) {
+
+  # recover any possible bookmarked
+  value <- restoreInput(id = inputId, default = NULL)
+
+  # defining the classes to use
+  btn_cl <- paste0(
+    "btn action-button",
+    if (is.null(status)) {
+      " btn-primary"
+    } else {
+      paste0(" btn-", status)
+    }
+  )
+  
+  # custom right margin
+  if (!is.null(icon)) icon$attribs$class <- paste0(
+    icon$attribs$class, " mr-1"
+  )
+
+  # creating the html
+  tags$button(
+    id = inputId,
+    style = if (!is.null(width)) paste0("width: ", validateCssUnit(width), ";"),
+    type = "button",
+    class = btn_cl,
+    `data-val` = value,
+    list(icon, label), ...
+  )
+}
+```
+
+**Let's RUN example 1**
+
+## Toggle Switch {-}
+
+In Tabler we can see the next **switch component** which have the peculiarity of having `type="checkbox"`.
+
+```html
+<label class="form-check form-switch">
+  <input class="form-check-input" type="checkbox" checked>
+  <span class="form-check-label">Option 1</span>
+</label>
+```
+
+Just like the checkbox in shiny.
+
+```r
+shiny::checkboxInput("test", "Test", TRUE)
+```
+
+```html
+<div class="form-group shiny-input-container">
+  <div class="checkbox">
+    <label>
+      <input id="test" type="checkbox" class="shiny-input-checkbox" checked="checked"/>
+      <span>Test</span>
+    </label>
+  </div>
+</div>
+```
+
+## Toggle Switch {-}
+
+Just by exploring `checkboxInputBinding` input binding we can confirm that shiny is using `type = "checkbox"` in the input tag. 
+
+```javascript
+var checkboxInputBinding = new InputBinding();
+$.extend(checkboxInputBinding, {
+  find: function(scope) {
+    return $(scope).find('input[type="checkbox"]');
+  },
+// ....; Extra code removed
+  }
+});
+
+inputBindings.register(checkboxInputBinding, 'shiny.checkboxInput');
+```
+
+## Toggle Switch {-}
+
+After this confirmation we just need to replicate the Tabler html into a function.
+
+```r
+tabler_switch <- function(inputId, label, value = FALSE, width = NULL) {
+
+  # Recovers any possible bookmarked
+  value <- restoreInput(id = inputId, default = value)
+  
+  # main wrapper creation
+  input_wrapper <- tags$label(
+    class = "form-check form-switch",
+    style = if (!is.null(width)) {
+      paste0("width: ", validateCssUnit(width), ";")
+    }
+  )
+  
+  # Defining the input tag to be find by the binding
+  # with form-check-input from Tabler
+  input_tag <- tags$input(
+    id = inputId,
+    type = "checkbox",
+    class = "form-check-input"
+  )
+
+  # Confirms if the switch needs to be active by default
+  if (!is.null(value) && value) {
+    input_tag <- tagAppendAttributes(input_tag, checked = "checked")
+  }
+
+  tagAppendChildren(
+    input_wrapper,
+    input_tag,
+    span(class = "form-check-label", label)
+  )
+}
+```
+
+## Toggle Switch {-}
+
+We also can create a update function which just a copy of `shiny::updateCheckboxInput` but more user friendly.
+
+```r
+update_tabler_switch <- function (session, inputId, label = NULL, value = NULL) {
+  message <- dropNulls(list(label = label, value = value))
+  session$sendInputMessage(inputId, message)
+}
+```
+
+**Let's RUN example 2**
+
+## Navbar menu input {-}
+
+To **capture the currently selected tab** to subsequently perform actions on the server side, updating the selected tab based on a button click.
+
+1. Add an **id** attribute to `tabler_navbar_menu()`.
+
+```r
+tabler_navbar_menu <- function(..., id = NULL) {
+  tags$ul(
+    id = id, 
+    class = "nav nav-pills navbar-nav",
+    ...
+  )
+}
+```
+
+2. Create the JS `navbarMenuBinding` looking for the `navbar-nav` class in the `find` method.
+
+```javascript
+find: function(scope) {
+  return $(scope).find('.navbar-nav');
+}
+```
+
+## Navbar menu input {-}
+
+3. Define the `initialize` method.
+
+```javascript
+initialize: function(el) {
+
+  // Construct the jQuery selector for the container element by its ID
+  let menuId = '#' + $(el).attr('id');
+
+  // Find the currently active tab within the container
+  let activeTab = $(`${menuId} .nav-link.active`);
+
+  // If at least one active tab is found
+  if (activeTab.length > 0) {
+    // Get the associated tab content's ID from the 'data-value' attribute
+    let tabId = $(activeTab).attr('data-value');
+
+    // Activate the tab using Bootstrap's tab API
+    // Remove the .active from other tabs
+    $(activeTab).tab('show');
+
+    // Make sure the corresponding tab content is also visible
+    $(`#${tabId}`).addClass('show active');
+    
+  } else {
+  
+    // If no active tab is found, activate the first tab in the menu
+    $(`${menuId} .nav-link`)
+      .first()
+      .tab('show');
+      
+  }
+}
+
+```
+
+## Navbar menu input {-}
+
+4. Define `getValue` is to return the currently selected tab.
+
+```javascript
+getValue: function(el) {
+  let activeTab = $(el).find('a').filter('nav-link active');
+  return $(activeTab).attr('data-value');
+}
+```
+
+```r
+tabler_navbar_menu_item <- function(text, tabName, 
+                                    icon = NULL, 
+                                    selected = FALSE) {
+  
+  item_cl <- paste0("nav-link", if(selected) " active")
+  
+  tags$li(
+    class = "nav-item",
+    a(
+      class = item_cl,
+      `data-value` = tabName,
+      # Commented since not relevant
+    )
+  )
+}
+```
+
+## Navbar menu input {-}
+
+5. Define `setValue` to update the active tab based on the Bootstrap method.
+
+```javascript
+setValue: function(el, value) {
+  let hrefVal = '#' + value;
+  let menuId = $(el).attr('id');
+  $(`#${menuId} a[data-target="${hrefVal}"]`).tab('show');
+}
+```
+
+## Navbar menu input {-}
+
+6. Create an update function and the `receiveMessage` method to change the tab.
+
+```r
+update_tabler_tab_item <- function(
+  inputId, 
+  value, 
+  session = getDefaultReactiveDomain()
+) {
+  session$sendInputMessage(inputId, message = value)
+}
+```
+
+
+```javascript
+receiveMessage: function(el, data) {
+  this.setValue(el, data);
+}
+```
+## Navbar menu input {-}
+
+7. Define the `subscribe` method to tell Shiny **when to change** the current input value. Here it's the events applied by Bootstrap in order:
+
+- `hide.bs.tab` (on the current active tab).
+- `show.bs.tab` (on the to-be-shown tab).
+- `hidden.bs.tab` (on the previous active tab).
+- `shown.bs.tab` (on the newly-active just-shown tab).
+
+```javascript
+subscribe: function(el, callback) {
+  // important to use shown.bs.tab and not show.bs.tab!
+  $(el).on('shown.bs.tab.navbarMenuBinding', function(e) {
+    callback();
+  });
+},
+  
+unsubscribe: function(el) {
+  $(el).off('.navbarMenuBinding');
+}
+```
+
+
+## Navbar menu input {-}
+
+8. Include this custom input binding.
+
+```r
+tabler_custom_js <- htmlDependency(
+  name = "tabler-bindings",
+  version = "1.0.7",
+  src = "tabler",
+  package = "OSUICode",
+  script = "input-bindings/navbarMenuBinding.js"
+)
+```
+
+```r
+add_tabler_deps <- function(tag) {
+  # below, the order is of critical importance!
+  deps <- list(bs4_deps, tablers_deps, tabler_custom_js)
+  attachDependencies(tag, deps, append = TRUE)
+}
+```
+
+**Let's RUN example 3**
+
 
 ## Meeting Videos
 
